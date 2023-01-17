@@ -1,0 +1,123 @@
+.update-employer-profile {
+    :global {
+        .update-employer-bg {
+            background-color: #F1F4F7;
+            background-size: cover;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .update-employer-box {
+            max-width: 80%;
+            margin: auto;
+            background: #FFFFFF;
+            box-shadow: 1px 1px 9px rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            padding: 33px 64px 44px 64px;
+        }
+
+        .update-employer-profile-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+            object-fit: cover;
+
+        }
+
+        .logo-update-icon {
+            position: relative;
+            right: 25px;
+            top: 35px;
+            padding: 7px;
+            border-radius: 50%;
+            background-color: #233966;
+            cursor: pointer;
+        }
+
+        .logo-text-field-input {
+            position: relative;
+            max-width: 25px !important;
+            max-height: 25px !important;
+            padding: 0 !important;
+            right: 52px;
+            top: 105px;
+
+            .MuiInputBase-input {
+                min-height: 1px;
+                border-radius: 50% !important;
+                cursor: pointer !important;
+            }
+        }
+
+        .MuiInputBase-input {
+            padding: 0px 10px !important;
+            min-height: 50px;
+        }
+
+        .MuiOutlinedInput-notchedOutline {
+            top: 0 !important;
+        }
+
+        .cancel-btn,
+        .cancel-btn:hover {
+            background: #233966;
+            color: #FFFFFF;
+        }
+
+        .security-title {
+            size: 20px;
+            color: #233966;
+        }
+
+        .add-btn,
+        .add-btn:hover {
+            padding: 10px 25px;
+            background: #233966;
+            color: #FFFFFF;
+        }
+
+        .options-title {
+            size: 20px;
+            font-weight: 600;
+            color: #233966;
+        }
+
+        .change-password-btn {
+            size: 16px;
+            color: #5A9BD5;
+            // max-width: 140px;
+            // border-bottom: 1px solid #5A9BD5;
+            cursor: pointer;
+            width: 100%;
+            text-align: end;
+        }
+
+        .change-password-btn span{
+            border-bottom: 1px solid #5A9BD5;
+        }
+
+        // .update-pwd-btn {
+        //     padding: 10px 25px;
+        //     background: #233966;
+        //     color: #FFFFFF;
+        //     margin: 0 16px;
+        //     white-space: nowrap;
+        //     border: 0;
+        //     border-radius: 4px;
+        // }
+    }
+}
+
+
+@media screen and (max-width:575px) {
+    .update-employer-profile {
+        :global {
+            .update-employer-box {
+                max-width: 100% !important;
+                padding: 33px 10px !important;
+            }
+        }
+    }
+}

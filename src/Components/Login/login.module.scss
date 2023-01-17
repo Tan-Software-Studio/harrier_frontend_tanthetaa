@@ -1,0 +1,160 @@
+.login-page {
+
+    :global {
+        .login-bg {
+            background-image: url("../../img/Signin/login-bg.png");
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            background-position: center center;
+
+            .common-title {
+                text-decoration-line: underline;
+            }
+
+            .css-vqmohf-MuiButtonBase-root-MuiRadio-root {
+                padding: 9px 6px 9px 9px;
+            }
+
+            .css-j204z7-MuiFormControlLabel-root:first-child {
+                margin-right: 50px;
+            }
+
+            .inside-box {
+                max-width: 80%;
+                margin: auto;
+            }
+
+            .bg-white {
+                background: #FFFFFF;
+                box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+                border-radius: 33px;
+                // max-width: 50%;
+                margin: auto;
+                // padding: 66px 0 85px;
+                padding: 48px 0;
+                max-width: 41%;
+            }
+
+            .MuiSvgIcon-fontSizeMedium.css-11zohuh-MuiSvgIcon-root {
+                background: white !important;
+                border-radius: 50% !important;
+                border: 4px solid #233966 !important;
+            }
+
+            .MuiInputBase-input {
+                padding: 0px 10px !important;
+                min-height: 50px;
+            }
+
+            .MuiOutlinedInput-notchedOutline {
+                top: 0 !important;
+            }
+
+            .bg-white {
+                position: initial !important;
+                top: initial !important;
+                left: initial !important;
+                right: initial !important;
+                bottom: initial !important;
+                transform: translate(0, 0) !important;
+            }
+
+            .footer-fixed {
+                position: absolute;
+                width: 100%;
+                bottom: 20px;
+                left: 0;
+            }
+
+        }
+
+        .MuiFormControl-root label {
+            width: auto !important;
+        }
+
+        .forgot-pwd {
+            color: #5A9BD5;
+        }
+
+        .mw-20 {
+            max-width: 20%;
+        }
+    }
+}
+
+
+.MuiInputBase-input {
+    padding: 0px 10px !important;
+    min-height: 50px;
+}
+
+.MuiOutlinedInput-notchedOutline {
+    top: 0 !important;
+}
+
+
+@media screen and (max-width:1536px) {
+    .login-page {
+        :global {
+          .footer-fixed{
+            position: initial !important;
+          }
+        }
+    }
+}
+@media screen and (max-width:1336px) {
+    .login-page {
+        :global {
+            .bg-white {
+                max-width: 45% !important;
+            }
+        }
+    }
+}
+
+@media screen and (max-width:1024px) {
+    .login-page {
+        :global {
+            .bg-white {
+                background-size: 100% !important;
+                max-width: 62% !important;
+            }
+
+        }
+    }
+}
+
+@media screen and (max-width:992px) {
+    .login-page {
+        :global {
+            .login-bg {
+                background-image: none;
+            }
+        }
+    }
+}
+
+@media screen and (max-width:767px) {
+    .login-page {
+        :global {
+            .bg-white {
+                background-image: none !important;
+            }
+
+        }
+    }
+}
+
+@media screen and (max-width:575px) {
+    .login-page {
+        :global {
+            .bg-white {
+                max-width: 100% !important;
+            }
+        }
+    }
+}
+
+// .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
+//     height: 2.4375em !important;
+// }

@@ -1,0 +1,577 @@
+.create-job {
+    background: #F1F4F7;
+    // height: 100vh;
+
+    :global {
+        .main-tabs {
+            .MuiBox-root {
+                border-radius: 0px !important;
+                box-shadow: none !important;
+                background-color: transparent !important;
+                box-shadow: none !important;
+            }
+
+            .border-bottom {
+                border: 1px solid #DEDEDE;
+                max-width: calc(100% - 30px);
+            }
+
+            .MuiButtonBase-root {
+                font-family: 'Work Sans';
+                font-size: 16px;
+                line-height: 19px;
+                font-weight: 600;
+                text-transform: uppercase;
+                color: #4382BB;
+            }
+
+            .MuiButtonBase-root.Mui-selected {
+                background: #579CD4;
+                border-radius: 6px;
+                color: white;
+            }
+
+            .MuiTabs-indicator {
+                display: none;
+            }
+
+            .MuiButtonBase-root {
+                margin-left: 35px;
+                padding: 6px 10px;
+            }
+
+            .profile-login {
+                border-radius: 50%;
+            }
+
+            .profile-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .dropdown-arrow {
+                padding-left: 11px;
+            }
+
+        }
+
+        .textArea {
+            .MuiBox-root {
+                box-shadow: none !important;
+                border-radius: 0px !important;
+            }
+
+            textArea {
+                box-shadow: none !important;
+                border: 1px solid #ced4da !important;
+                padding: 10px 12px;
+            }
+
+        }
+
+        .live-job-box {
+            .MuiInputBase-input {
+                min-height: 33px !important;
+                max-height: 33px !important;
+                padding: 0px 10px !important;
+                max-width: 100px;
+            }
+        }
+
+        .data-filter {
+            min-width: 192px;
+            max-width: 192px;
+
+            .MuiSelect-outlined {
+                border: 1px solid #ced4da !important;
+                ;
+            }
+        }
+
+
+        .tables {
+            max-width: 1550px;
+            overflow-x: auto;
+            border-radius: 12px;
+
+            td {
+                text-align: left;
+            }
+
+            .MuiTableCell-head {
+                background: #E7ECF2;
+                text-align: left;
+                font-family: 'Work Sans';
+                font-weight: 600;
+                font-size: 14px;
+                line-height: 16px;
+                color: #233966;
+            }
+
+            .MuiTableCell-body {
+                min-width: 120px;
+                font-family: 'Work Sans';
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 16px;
+                color: #323232;
+            }
+
+            .MuiTableRow-root:nth-child(odd) {
+                background: white;
+            }
+
+            .MuiTableRow-root:nth-child(even) {
+                background: #F1F4F7;
+            }
+
+            .request-bg {
+                background: #C2E2FF;
+                border-radius: 4px;
+                width: max-content;
+                padding: 4px 8px;
+            }
+
+            .active-status {
+                font-family: 'Work Sans';
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 16px;
+                color: #1FAD83;
+                padding: 2px 4px;
+                background: #D2EFE6;
+                border-radius: 3px;
+                width: max-content;
+            }
+
+            .passive-status {
+                font-family: 'Work Sans';
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 16px;
+                color: #EA9601;
+                padding: 2px 4px;
+                background: #FBEACC;
+                border-radius: 3px;
+                width: max-content;
+
+            }
+
+            .closed-status {
+                font-family: 'Work Sans';
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 16px;
+                color: #C80000;
+                padding: 2px 4px;
+                background: #F5CCCC;
+                border-radius: 3px;
+                width: max-content;
+
+            }
+
+            .very-passive-status {
+                font-family: 'Work Sans';
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 16px;
+                color: #034ADC;
+                padding: 2px 4px;
+                background: #F5CCCC;
+                border-radius: 3px;
+                width: max-content;
+
+            }
+
+            .MuiPaper-root {
+                background: #E7ECF2;
+                border-radius: 12px 12px 12px 12px;
+                // border: 2px solid red;
+            }
+
+            /* ===== Scrollbar CSS ===== */
+            /* Firefox */
+            * {
+                scrollbar-width: thin;
+                scrollbar-color: #e7ecf2 #ffffff;
+            }
+
+            /* Chrome, Edge, and Safari */
+            *::-webkit-scrollbar {
+                width: 14px;
+            }
+
+            *::-webkit-scrollbar-track {
+                background: #ffffff;
+            }
+
+            *::-webkit-scrollbar-thumb {
+                background-color: #e7ecf2;
+                border-radius: 7px;
+                border: 3px solid #ffffff;
+            }
+        }
+
+        .update-pagination {
+            nav {
+                margin-top: 0px;
+            }
+
+            .Mui-selected {
+                background: #233966;
+                box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.15);
+                border-radius: 3px;
+                color: white;
+                ;
+            }
+
+            .MuiSvgIcon-root {
+                background-color: white;
+            }
+
+            .MuiList-padding {
+                filter: none !important;
+            }
+        }
+
+        .filter-select {
+
+            .MuiSelect-select,
+            .MuiOutlinedInput-root {
+                position: relative;
+            }
+        }
+
+        .simple-checkbox .MuiButtonBase-root {
+            filter: none !important;
+            padding: 0px;
+        }
+
+        .MuiList-padding {
+            position: absolute !important;
+        }
+
+        #simple-tabpanel-0 .MuiBox-root,
+        #simple-tabpanel-1 .MuiBox-root,
+        #simple-tabpanel-2 .MuiBox-root {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0px !important;
+        }
+
+        .MuiInputBase-input {
+            padding: 11px 10px !important;
+            font-size: 14px !important;
+        }
+
+        .form-bg {
+            background: #FFFFFF;
+            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .bg-blue h2 {
+            padding: 10px 15px;
+        }
+
+        .box-border {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        .currency-box-border {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            max-height: 45px;
+            padding: none;
+            align-items: center;
+        }
+
+        .css-1qqsdnr-MuiAutocomplete-root .MuiOutlinedInput-root {
+            padding: 0 3px;
+        }
+
+        .css-fqozhi-MuiInputBase-root {
+            display: inline-grid;
+        }
+
+        .mw-30 {
+            max-width: 30%;
+        }
+
+        .mw-6 {
+            max-width: 6%;
+        }
+
+        .heading {
+            font-family: 'Work Sans';
+            font-weight: 600;
+            font-size: 25px;
+            line-height: 29px;
+            color: #233966;
+        }
+
+        .live-job .live-job-box {
+            background: #FFFFFF;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.15);
+            border-radius: 13px;
+            padding: 24px 30px 0 30px;
+            margin-top: 35px !important;
+        }
+
+        .live-job .about-job {
+            margin-bottom: 50px;
+        }
+
+        .small {
+            max-height: 175px;
+            overflow: hidden;
+            transition: 0.5s;
+        }
+
+        .full {
+            min-height: 175px;
+            max-height: 100%;
+            transition: 0.5s;
+            overflow: hidden;
+        }
+
+        .full .icon-rotate {
+            transform: rotate(180deg);
+            transition: 1s;
+        }
+
+        .job-title {
+            font-family: 'Work Sans';
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 23px;
+            color: #233966;
+        }
+
+        .job-description {
+            font-family: 'Work Sans';
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 15px;
+            color: #323232;
+        }
+
+        .job-sub-title {
+            font-family: 'Work Sans';
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 16px;
+            color: #233966;
+        }
+
+        .work-from {
+            background: #E0F0FF;
+            box-shadow: 0px 0px 1px #233966;
+            border-radius: 3px;
+            padding: 2px 10px;
+            font-family: 'Work Sans';
+            font-style: normal;
+            font-weight: 500;
+            font-size: 20px;
+            line-height: 23px;
+            color: #233966;
+        }
+
+        .from-where-work {
+            position: absolute;
+            bottom: 0px;
+            width: calc(100% - 60px);
+            background-color: white;
+            padding: 15px 0;
+        }
+
+        fieldset.MuiOutlinedInput-notchedOutline {
+            border: 0 !important;
+        }
+
+        .filter-select .MuiInputBase-colorPrimary {
+            border: 1px solid #ced4da !important;
+        }
+
+        .add-remove-input {
+            max-width: 100%;
+        }
+
+        .first-input {
+            width: 10%;
+        }
+
+        .second-input,
+        .fourth-input {
+            width: 30%;
+        }
+
+        .third-input {
+            width: 20%;
+        }
+
+        .select-down-icon {
+            .css-1okebmr-indicatorSeparator {
+                display: none;
+            }
+
+            .css-1s2u09g-control {
+                // padding: 11px 10px !important;
+                font-size: 14px !important;
+                border-radius: 6px !important;
+                border: 1px solid #ced4da;
+                min-height: 44px;
+            }
+
+            .css-1pahdxg-control,
+            .css-1pahdxg-control:hover {
+                // padding: 11px 10px !important;
+                font-size: 14px !important;
+                border-radius: 6px !important;
+                border: 1px solid #ced4da !important;
+                min-height: 44px !important;
+                box-shadow: none !important;
+            }
+
+            .css-6j8wv5-Input {
+                margin: 0px;
+                padding-bottom: 0px;
+                padding-top: 0px;
+            }
+
+            .css-319lph-ValueContainer {
+                padding: 11px 10px !important;
+            }
+
+            .css-319lph-ValueContainer {
+                background-image: url("../../img/common/arrow-down.png") !important;
+                background-repeat: no-repeat !important;
+                background-position: 130px 19px !important;
+                padding: 0;
+            }
+
+            .css-26l3qy-menu {
+                z-index: 2 !important;
+            }
+
+            .css-1hb7zxy-IndicatorsContainer {
+                display: none;
+            }
+
+            .css-tlfecz-indicatorContainer {
+                svg {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+
+@media screen and (max-width:1460px) {
+    .create-job {
+        background: #F1F4F7;
+
+        :global {
+            .mt-21 {
+                margin-top: 21px !important;
+            }
+        }
+    }
+}
+
+@media screen and (max-width:1440px) {
+    .create-job {
+        background: #F1F4F7;
+
+        :global {
+            .main-tabs {
+                .MuiButtonBase-root {
+                    margin-left: 15px;
+                    font-size: 14px;
+                    line-height: 19px;
+                }
+
+            }
+
+        }
+    }
+}
+
+@media screen and (max-width:1400px) {
+    .create-job {
+
+
+        :global {
+            .mt-21 {
+                margin-top: 0px !important;
+            }
+        }
+    }
+}
+
+@media screen and (max-width:992px) {
+    .create-job {
+        background: #F1F4F7;
+
+        :global {
+            .main-tabs {
+                .MuiButtonBase-root {
+                    margin-left: 10px;
+                    font-size: 12px;
+                    line-height: 17px;
+                }
+            }
+        }
+    }
+
+}
+
+@media screen and (max-width:575px) {
+    .create-job {
+        background: #F1F4F7;
+
+        :global {
+            .MuiTabs-flexContainer {
+                flex-direction: column !important;
+                align-items: start;
+            }
+
+            .from-where-work {
+                width: calc(100% - 30px);
+            }
+
+            .MuiButtonBase-root {
+                margin-left: 0px !important;
+                // padding-left: 0px !important;
+            }
+
+            .job-title {
+                font-size: 17px !important;
+                line-height: 21px !important;
+            }
+
+            .work-from {
+                font-size: 17px;
+                line-height: 20px;
+            }
+
+            .live-job-box {
+                .MuiInputBase-input {
+                    min-height: 28px !important;
+                    max-height: 28px !important;
+                    max-width: 100%;
+                }
+            }
+
+            .live-job .live-job-box {
+                padding: 24px 15px 0 15px;
+            }
+
+        }
+    }
+
+}
