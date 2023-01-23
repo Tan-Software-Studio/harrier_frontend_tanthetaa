@@ -70,7 +70,7 @@ const SingleCandidate = () => {
             </button>
 
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-lg-4 my-3">
                 <div className="candidate-bg">
                   <h3 className="question-title px-30">Core Questions</h3>
                   <p className="border-btm"></p>
@@ -290,7 +290,7 @@ const SingleCandidate = () => {
                 </div>
               </div>
 
-              <div className="col-lg-8">
+              <div className="col-lg-8 my-3">
                 <div className="candidate-bg">
                   <h3 className="question-title px-30">Role Specific</h3>
                   <p className="border-btm"></p>

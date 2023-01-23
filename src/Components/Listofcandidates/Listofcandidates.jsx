@@ -87,6 +87,7 @@ const Listofcandidates = () => {
     getSelectValue !== null ? getSelectValue.split(",").slice(0) : null;
 
   let getFilterValue = JSON.parse(localStorage.getItem("Filter"));
+  // console.log("--------->>>> getFilterValue", getFilterValue);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -167,6 +168,7 @@ const Listofcandidates = () => {
   //         third_option: "",
   //         currency: "",
   //         currency_code: "",
+  //         sub_options: [],
   //     }
   // ])
 
@@ -180,9 +182,12 @@ const Listofcandidates = () => {
         third_option: "",
         currency: "",
         currency_code: "",
+        sub_options: [],
       },
     ]
   );
+
+  // console.log("--->>> myFilterData", myFilterData);
 
   const [storage, setStorage] = useState({
     is_show: "",
@@ -192,6 +197,7 @@ const Listofcandidates = () => {
     third_option: "",
     currency: "",
     currency_code: "",
+    sub_options: [],
   });
 
   const ColumnOptions = [
@@ -317,6 +323,7 @@ const Listofcandidates = () => {
         third_option: "",
         currency: "",
         currency_code: "",
+        sub_options: [],
       },
     ]);
   };
@@ -345,12 +352,14 @@ const Listofcandidates = () => {
   const theme = useTheme();
 
   const handlePageChange = (event, value) => {
-    getCandidatesList(value);
+    // getCandidatesList(value);
+    getDropDownListTest(myFilterData, value);
   };
 
   useEffect(() => {
     document.title = "List of candidates";
-    getCandidatesList(1);
+    getDropDownListTest(myFilterData, 1);
+    // getCandidatesList(1);
     getQuickSearch();
     getCurrenciesList();
     // getCVrequestList();
@@ -375,7 +384,8 @@ const Listofcandidates = () => {
 
         if (res?.data?.success) {
           toast.success(msg);
-          getCandidatesList(1);
+          getDropDownListTest(myFilterData, 1);
+          // getCandidatesList(1);
         } else {
           toast.error(msg);
         }
@@ -450,6 +460,7 @@ const Listofcandidates = () => {
       .then((res) => {
         const myData = JSON.parse(Decrypt(res?.data?.data));
         const candidatesList = myData?.data;
+        // console.log("--->  VIEW", candidatesList);
 
         if (res?.data?.success) {
           setCandidatesListDetails(candidatesList);
@@ -551,6 +562,7 @@ const Listofcandidates = () => {
         third_option: "",
         currency: "",
         currency_code: "",
+        sub_options: [],
       },
     ]);
   };
@@ -558,10 +570,10 @@ const Listofcandidates = () => {
   const handelSearchFilter = (e) => {
     localStorage.setItem("Filter", JSON.stringify(e));
 
-    getDropDownListTest(e);
+    getDropDownListTest(e, 1);
   };
 
-  const getDropDownListTest = async (myFilterData) => {
+  const getDropDownListTest = async (myFilterData, value) => {
     const encryptedData = Encrypt(
       JSON.stringify({
         main_filter: myFilterData,
@@ -569,7 +581,7 @@ const Listofcandidates = () => {
     );
 
     await axiosInstanceAuth
-      .post(`/v1/emp/candidates/list?page=`, {
+      .post(`/v1/emp/candidates/list?page=${value}`, {
         response: encryptedData,
       })
       .then((res) => {
@@ -788,6 +800,10 @@ const Listofcandidates = () => {
                               name="first"
                               onChange={(e, value) => {
                                 i.first_option = value?.props?.value;
+
+                                i.sub_options = QuickSearchOptions.filter((x) =>
+                                  value?.props?.value.includes(x?.select)
+                                );
 
                                 setStorage({
                                   ...storage,
@@ -1069,7 +1085,8 @@ const Listofcandidates = () => {
                               clearOnBlur
                               handleHomeEndKeys
                               // id="free-solo-with-text-demo"
-                              options={SubOption?.[0]?.list}
+                              options={i.sub_options?.[0]?.list}
+                              // options={SubOption?.[0]?.list}
                               getOptionLabel={(option) => {
                                 // Value selected with enter, right from the input
                                 if (typeof option === "string") {
@@ -1177,7 +1194,8 @@ const Listofcandidates = () => {
                                 clearOnBlur
                                 handleHomeEndKeys
                                 // id="free-solo-with-text-demo"
-                                options={SubOption?.[0]?.list}
+                                options={i.sub_options?.[0]?.list}
+                                // options={SubOption?.[0]?.list}
                                 getOptionLabel={(option) => {
                                   // Value selected with enter, right from the input
                                   if (typeof option === "string") {
@@ -1398,214 +1416,211 @@ const Listofcandidates = () => {
             </div>
 
             <div className="tables mt-20 mh-auto">
-              {
-                personFilter.length > 0 ? (
-                  <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Candidate #</TableCell>
-                          <TableCell align="right">Request CV</TableCell>
-                          <TableCell align="right">Shortlist</TableCell>
-                          {selctedColumns.length > 0 &&
-                            selctedColumns.map((d, i) => (
-                              <TableCell key={i}>{d}</TableCell>
-                            ))}
+              {personFilter.length > 0 ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Candidate #</TableCell>
+                        <TableCell align="right">Request CV</TableCell>
+                        <TableCell align="right">Shortlist</TableCell>
+                        {selctedColumns.length > 0 &&
+                          selctedColumns.map((d, i) => (
+                            <TableCell key={i}>{d}</TableCell>
+                          ))}
 
-                          {/* {testSelctedColumns.length > 0 && testSelctedColumns.map((d, i) => (
+                        {/* {testSelctedColumns.length > 0 && testSelctedColumns.map((d, i) => (
                                 <TableCell key={i}>{d?.title}</TableCell>
                             ))} */}
-                        </TableRow>
-                      </TableHead>
+                      </TableRow>
+                    </TableHead>
 
-                      <TableBody>
-                        {candidatesListDetails.map((d, index) => (
-                          <TableRow
-                            key={index}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                            className="pointer"
-                          >
-                            <TableCell component="th" scope="row">
-                              #{d?.id}
+                    <TableBody>
+                      {candidatesListDetails.map((d, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                          className="pointer"
+                        >
+                          <TableCell component="th" scope="row">
+                            #{d?.id}
+                          </TableCell>
+
+                          {d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
+                            <TableCell align="right">
+                              {d?.is_cv_list_same_emp?.is_cv === 2 ? (
+                                <div className="active-status">Accepted</div>
+                              ) : d?.is_cv_list_same_emp?.is_cv === 1 ? (
+                                <div className="requested-status">
+                                  Requested
+                                </div>
+                              ) : d?.is_cv_list_same_emp?.is_cv === 3 ? (
+                                <div className="closed-status">Rejected</div>
+                              ) : null}
                             </TableCell>
+                          ) : (
+                            <TableCell
+                              align="right"
+                              onClick={(e) => handleOpenPopUp(d.uuid)}
+                            >
+                              <div className="request-status">Request</div>
+                            </TableCell>
+                          )}
 
-                            {d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
-                              <TableCell align="right">
-                                {d?.is_cv_list_same_emp?.is_cv === 2 ? (
-                                  <div className="active-status">Accepted</div>
-                                ) : d?.is_cv_list_same_emp?.is_cv === 1 ? (
-                                  <div className="requested-status">
-                                    Requested
-                                  </div>
-                                ) : d?.is_cv_list_same_emp?.is_cv === 3 ? (
-                                  <div className="closed-status">Rejected</div>
-                                ) : null}
-                              </TableCell>
-                            ) : (
-                              <TableCell
-                                align="right"
-                                onClick={(e) => handleOpenPopUp(d.uuid)}
-                              >
-                                <div className="request-status">Request</div>
-                              </TableCell>
-                            )}
+                          {
+                            <TableCell
+                              align="right"
+                              onClick={(e) => handleShortlist(d.uuid)}
+                            >
+                              {d?.emp_short_list === null ? (
+                                <div className="bg-Color-add d-flex justify-content-center">
+                                  Add
+                                </div>
+                              ) : d?.emp_short_list ? (
+                                <div className="bg-Color-remove d-flex justify-content-center">
+                                  Remove
+                                </div>
+                              ) : null}
+                            </TableCell>
+                          }
 
-                            {
-                              <TableCell
-                                align="right"
-                                onClick={(e) => handleShortlist(d.uuid)}
-                              >
-                                {d?.emp_short_list === null ? (
-                                  <div className="bg-Color-add d-flex justify-content-center">
-                                    Add
-                                  </div>
-                                ) : d?.emp_short_list ? (
-                                  <div className="bg-Color-remove d-flex justify-content-center">
-                                    Remove
-                                  </div>
-                                ) : null}
-                              </TableCell>
-                            }
+                          {selctedColumns.includes("Job Title") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.job_title}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Job Title") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.job_title}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Employer Type") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.employer_type_list?.title}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Employer Type") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.employer_type_list?.title}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Time in Current Role") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.time_in_current_role_diff}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Time in Current Role") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.time_in_current_role_diff}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Time in Industry") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.time_in_industry_diff}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Time in Industry") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.time_in_industry_diff}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Status") ? (
+                            <TableCell
+                              align="right"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d.status === 1 ? (
+                                <div className="bg-Color-success d-flex justify-content-center">
+                                  Active
+                                </div>
+                              ) : d.status === 2 ? (
+                                <div className="bg-Color-info d-flex justify-content-center">
+                                  Passive
+                                </div>
+                              ) : d.status === 3 ? (
+                                <div className="bg-Color-warning d-flex justify-content-center">
+                                  Very Passive
+                                </div>
+                              ) : d.status === 4 ? (
+                                <div className="bg-Color-error d-flex justify-content-center">
+                                  Closed
+                                </div>
+                              ) : null}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Status") ? (
-                              <TableCell
-                                align="right"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d.status === 1 ? (
-                                  <div className="bg-Color-success d-flex justify-content-center">
-                                    Active
-                                  </div>
-                                ) : d.status === 2 ? (
-                                  <div className="bg-Color-info d-flex justify-content-center">
-                                    Passive
-                                  </div>
-                                ) : d.status === 3 ? (
-                                  <div className="bg-Color-warning d-flex justify-content-center">
-                                    Very Passive
-                                  </div>
-                                ) : d.status === 4 ? (
-                                  <div className="bg-Color-error d-flex justify-content-center">
-                                    Closed
-                                  </div>
-                                ) : null}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Desired Employer Type") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.desired_employer_types.map(
+                                (d) =>
+                                  `${d?.desired_employer_types_view?.title}, `
+                              )}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes(
-                              "Desired Employer Type"
-                            ) ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.desired_employer_types.map(
-                                  (d) =>
-                                    `${d?.desired_employer_types_view?.title}, `
-                                )}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Line Management") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.line_management}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Line Management") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.line_management}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Notice Period") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d.notice_period == 0 || d.notice_period == 1
+                                ? `${d.notice_period} Week`
+                                : d.notice_period == null
+                                ? ""
+                                : `${d.notice_period} Weeks`}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Notice Period") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d.notice_period == 0 || d.notice_period == 1
-                                  ? `${d.notice_period} Week`
-                                  : d.notice_period == null
-                                  ? ""
-                                  : `${d.notice_period} Weeks`}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Current Country") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.current_country_list?.country_name}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Current Country") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.current_country_list?.country_name}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Desired Country") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.desired_country_list.map(
+                                (d) => `${d?.country_name}, `
+                              )}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Desired Country") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.desired_country_list.map(
-                                  (d) => `${d?.country_name}, `
-                                )}
-                              </TableCell>
-                            ) : null}
+                          {selctedColumns.includes("Current Region") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.current_regions_list?.title}
+                            </TableCell>
+                          ) : null}
 
-                            {selctedColumns.includes("Current Region") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.current_regions_list?.title}
-                              </TableCell>
-                            ) : null}
-
-                            {/* {selctedColumns.includes("Current Salary") ?
+                          {/* {selctedColumns.includes("Current Salary") ?
                                                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)} >
                                                             {d?.current_salary_symbol_list?.currency_code} {d.current_salary}
                                                         </TableCell>
@@ -1617,584 +1632,23 @@ const Listofcandidates = () => {
                                                         </TableCell>
                                                         : null} */}
 
-                            {selctedColumns.includes("Desired Salary") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.desired_salary_symbol_list?.currency_code}{" "}
-                                {d.desired_salary}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes(
-                              "Desired Bonus / Commission"
-                            ) ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {
-                                  d?.desired_bonus_or_commission_symbol_list
-                                    ?.currency_code
-                                }{" "}
-                                {d.desired_bonus_or_commission}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Current Freelancer") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.current_freelance?.[0]?.title}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Open to Freelance") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.open_to_freelance?.[0]?.title}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Day Rate") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {
-                                  d?.freelance_daily_rate_symbol_list
-                                    ?.currency_code
-                                }{" "}
-                                {d?.day_rate}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes(
-                              "Current Working Arrangements"
-                            ) ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.current_working_arrangements_list?.title}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes(
-                              "Desired Working Arrangements"
-                            ) ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.desired_working_arrangements_list.map(
-                                  (d) => `${d?.title}, `
-                                )}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Law Degree") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d.law_degree === 0 ? "No" : "Yes"}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Qualified Lawyer") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d.qualified_lawyer === 0 ? "No" : "Yes"}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Jurisdiction") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d.jurisdiction}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes(
-                              "Post-Qualified Experience"
-                            ) ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.pqe}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Legal Specialism") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.legal_specialism}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Area of Law") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d.area_of_law}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes(
-                              "LegalTech Vendor/Consultancy"
-                            ) ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {
-                                  d?.legaltech_vendor_or_consultancy_list?.[0]
-                                    ?.title
-                                }
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Customer Type") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.customer_type_list.map(
-                                  (d) => `${d?.title}, `
-                                )}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Deal Size") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.deal_size_symbol_list?.currency_code}{" "}
-                                {d?.deal_size}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Sales quota") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.sales_quota_symbol_list?.currency_code}{" "}
-                                {d?.sales_quota}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("LegalTech Tools") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.legal_tech_tools.map((d) => `${d}, `)}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Tech Tools") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.tech_tools.map((d) => `${d}, `)}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Qualifications") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.qualification.map((d) => `${d}, `)}
-                              </TableCell>
-                            ) : null}
-
-                            {selctedColumns.includes("Languages") ? (
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                onClick={(e) => handleEdit(d.uuid)}
-                              >
-                                {d?.languages_list.map((d) => `${d?.title}, `)}
-                              </TableCell>
-                            ) : null}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : checked === false && selectedOption === "Legal" ? (
-                  <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Candidate #</TableCell>
-                          <TableCell align="right">Job Title</TableCell>
-                          <TableCell align="right">Years in Role</TableCell>
-                          <TableCell align="right">Law Degree</TableCell>
-                          <TableCell align="right">Qualified Lawyer</TableCell>
-                          <TableCell align="right">Jurisdiction</TableCell>
-                          <TableCell align="right">PQE</TableCell>
-                          <TableCell align="right">Area of Law</TableCell>
-                          <TableCell align="right">LegalTech Tools</TableCell>
-                          <TableCell align="right">Qualifications</TableCell>
-                        </TableRow>
-                      </TableHead>
-
-                      <TableBody>
-                        {candidatesListDetails.map((d, index) => (
-                          <TableRow
-                            key={index}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                            className="pointer"
-                            onClick={(e) => handleEdit(d.uuid)}
-                          >
-                            <TableCell component="th" scope="row">
-                              #{d?.id}
-                            </TableCell>
-                            <TableCell align="right">{d.job_title}</TableCell>
-                            <TableCell align="right">
-                              {d.time_in_current_role_diff}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d.law_degree === 0 ? "No" : "Yes"}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d.qualified_lawyer === 0 ? "No" : "Yes"}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d.jurisdiction}
-                            </TableCell>
-                            <TableCell align="right">{d.pqe_diff}</TableCell>
-                            <TableCell align="right">{d.area_of_law}</TableCell>
-                            <TableCell align="right">
-                              {d?.legal_tech_tools.map((d) => `${d}, `)}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.qualification.map((d) => `${d}, `)}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : checked === false && selectedOption === "Tech" ? (
-                  <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Candidate #</TableCell>
-                          <TableCell align="right">Job Title</TableCell>
-                          <TableCell align="right">Years in Role</TableCell>
-                          <TableCell align="right">Tech Tools</TableCell>
-                          <TableCell align="right">LegalTech Tools</TableCell>
-                          <TableCell align="right">Qualifications</TableCell>
-                          <TableCell align="right">
-                            Desired Working Arrangements
-                          </TableCell>
-                          <TableCell align="right">Notice period</TableCell>
-                        </TableRow>
-                      </TableHead>
-
-                      <TableBody>
-                        {candidatesListDetails.map((d, index) => (
-                          <TableRow
-                            key={index}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                            className="pointer"
-                            onClick={(e) => handleEdit(d.uuid)}
-                          >
-                            <TableCell component="th" scope="row">
-                              #{d?.id}
-                            </TableCell>
-                            <TableCell align="right">{d.job_title}</TableCell>
-                            <TableCell align="right">
-                              {d.time_in_current_role_diff}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.tech_tools.map((d) => `${d}, `)}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.legal_tech_tools.map((d) => `${d}, `)}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.qualification.map((d) => `${d}, `)}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.desired_working_arrangements_list.map(
-                                (d) => `${d?.title}, `
-                              )}
-                            </TableCell>
-                            <TableCell align="right">
-                              {/* {d.notice_period == null ? "" : `${d.notice_period} Week`} */}
-                              {d.notice_period == 0 || d.notice_period == 1
-                                ? `${d.notice_period} Week`
-                                : d.notice_period == null
-                                ? ""
-                                : `${d.notice_period} Weeks`}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : checked === false && selectedOption === "Commercial" ? (
-                  <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Candidate #</TableCell>
-                          <TableCell align="right">Job Title</TableCell>
-                          <TableCell align="right">Years in Role</TableCell>
-                          {/* <TableCell align="right">Desired Role</TableCell> */}
-                          <TableCell align="right">Desired salary</TableCell>
-                          <TableCell align="right">
-                            Desired Bonus / commission
-                          </TableCell>
-                          <TableCell align="right">Customer Type</TableCell>
-                          <TableCell align="right">Deal Size</TableCell>
-                          <TableCell align="right">Sales quota</TableCell>
-                          <TableCell align="right">Notice Period</TableCell>
-                        </TableRow>
-                      </TableHead>
-
-                      <TableBody>
-                        {candidatesListDetails.map((d, index) => (
-                          <TableRow
-                            TableRow
-                            key={index}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                            className="pointer"
-                            onClick={(e) => handleEdit(d.uuid)}
-                          >
-                            <TableCell component="th" scope="row">
-                              #{d?.id}
-                            </TableCell>
-                            <TableCell align="right">{d.job_title}</TableCell>
-                            <TableCell align="right">
-                              {d.time_in_current_role_diff}
-                            </TableCell>
-                            {/* <TableCell align="right" >
-                                                            {d?.desired_employer_type_list.map((d) => (`${ d?.title }, `))}
-                                                        </TableCell> */}
-                            <TableCell align="right">
-                              {d?.desired_salary_symbol_list?.currency_code}{" "}
-                              {d.desired_salary}
-                            </TableCell>
-                            <TableCell align="right">
-                              {
-                                d?.desired_bonus_or_commission_symbol_list
-                                  ?.currency_code
-                              }{" "}
-                              {d.desired_bonus_or_commission}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.customer_type_list.map(
-                                (d) => `${d?.title}, `
-                              )}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.deal_size_symbol_list?.currency_code}{" "}
-                              {d?.deal_size}
-                            </TableCell>
-                            <TableCell align="right">
-                              {d?.sales_quota_symbol_list?.currency_code}{" "}
-                              {d?.sales_quota}
-                            </TableCell>
-                            <TableCell align="right">
-                              {/* {d.notice_period == null ? "" : `${d.notice_period} Week`} */}
-                              {d.notice_period == 0 || d.notice_period == 1
-                                ? `${d.notice_period} Week`
-                                : d.notice_period == null
-                                ? ""
-                                : `${d.notice_period} Weeks`}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : checked === false && selectedOption === "Overview" ? (
-                  <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Candidate #</TableCell>
-                          <TableCell align="right">Request CV</TableCell>
-                          <TableCell align="right">Shortlist</TableCell>
-                          <TableCell align="right">Job Title</TableCell>
-                          <TableCell align="right">Employer Type</TableCell>
-                          <TableCell align="right">Years in Role</TableCell>
-
-                          <TableCell align="right">Years in Industry</TableCell>
-                          <TableCell align="right">Status</TableCell>
-                          <TableCell align="right">Desired salary</TableCell>
-                          <TableCell align="right">
-                            D. Bonus/ commission
-                          </TableCell>
-                          {/* <TableCell align="right">Notice
-                                                                Period(wks)</TableCell>
-                                                            <TableCell align="right">PQE</TableCell>
-                                                            <TableCell align="right">LegalTech Tools</TableCell> */}
-                        </TableRow>
-                      </TableHead>
-
-                      <TableBody>
-                        {candidatesListDetails.map((d, index) => (
-                          <TableRow
-                            key={index}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                            className="pointer"
-                          >
+                          {selctedColumns.includes("Desired Salary") ? (
                             <TableCell
                               component="th"
                               scope="row"
                               onClick={(e) => handleEdit(d.uuid)}
                             >
-                              #{d?.id}
-                            </TableCell>
-                            {d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
-                              <TableCell align="right">
-                                {d?.is_cv_list_same_emp?.is_cv === 2 ? (
-                                  <div className="active-status">Accepted</div>
-                                ) : d?.is_cv_list_same_emp?.is_cv === 1 ? (
-                                  <div className="requested-status">
-                                    Requested
-                                  </div>
-                                ) : d?.is_cv_list_same_emp?.is_cv === 3 ? (
-                                  <div className="closed-status">Rejected</div>
-                                ) : (
-                                  ""
-                                )}
-                              </TableCell>
-                            ) : (
-                              <TableCell
-                                align="right"
-                                onClick={(e) => handleOpenPopUp(d.uuid)}
-                              >
-                                <div className="request-status">Request</div>
-                              </TableCell>
-                            )}
-
-                            {
-                              <TableCell
-                                align="right"
-                                onClick={(e) => handleShortlist(d.uuid)}
-                              >
-                                {d?.emp_short_list === null ? (
-                                  <div className="bg-Color-add d-flex justify-content-center">
-                                    Add
-                                  </div>
-                                ) : d?.emp_short_list ? (
-                                  <div className="bg-Color-remove d-flex justify-content-center">
-                                    Remove
-                                  </div>
-                                ) : null}
-                              </TableCell>
-                            }
-
-                            <TableCell
-                              align="right"
-                              onClick={(e) => handleEdit(d.uuid)}
-                            >
-                              {d.job_title}
-                            </TableCell>
-                            <TableCell
-                              align="right"
-                              onClick={(e) => handleEdit(d.uuid)}
-                            >
-                              {d.employer_type_list?.title}
-                            </TableCell>
-                            <TableCell
-                              align="right"
-                              onClick={(e) => handleEdit(d.uuid)}
-                            >
-                              {d.time_in_current_role_diff}
-                            </TableCell>
-                            <TableCell
-                              align="right"
-                              onClick={(e) => handleEdit(d.uuid)}
-                            >
-                              {d.time_in_industry_diff}
-                            </TableCell>
-
-                            <TableCell
-                              align="right"
-                              onClick={(e) => handleEdit(d.uuid)}
-                            >
-                              {d.status === 1 ? (
-                                <div className="bg-Color-success d-flex justify-content-center">
-                                  Active
-                                </div>
-                              ) : d.status === 2 ? (
-                                <div className="bg-Color-warning d-flex justify-content-center">
-                                  Passive
-                                </div>
-                              ) : d.status === 3 ? (
-                                <div className="bg-Color-info d-flex justify-content-center">
-                                  Very Passive
-                                </div>
-                              ) : d.status === 4 ? (
-                                <div className="bg-Color-error d-flex justify-content-center">
-                                  Closed
-                                </div>
-                              ) : null}
-                            </TableCell>
-
-                            <TableCell
-                              align="right"
-                              onClick={(e) => handleEdit(d.uuid)}
-                            >
                               {d?.desired_salary_symbol_list?.currency_code}{" "}
                               {d.desired_salary}
-                              {/* <CurrencyFormat value={d.desired_salary} displayType={'text'} thousandSeparator={true} prefix={d?.desired_salary_symbol_list?.symbol} /> */}
                             </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes(
+                            "Desired Bonus / Commission"
+                          ) ? (
                             <TableCell
-                              align="right"
+                              component="th"
+                              scope="row"
                               onClick={(e) => handleEdit(d.uuid)}
                             >
                               {
@@ -2202,302 +1656,576 @@ const Listofcandidates = () => {
                                   ?.currency_code
                               }{" "}
                               {d.desired_bonus_or_commission}
-                              {/* <CurrencyFormat value={d.desired_bonus_or_commission} displayType={'text'} thousandSeparator={true} prefix={d?.desired_bonus_or_commission_symbol_list?.symbol} /> */}
                             </TableCell>
-                            {/* <TableCell align="right" onClick={(e) => handleEdit(d.uuid)}>{d.notice_period} Week</TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Current Freelancer") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.current_freelance?.[0]?.title}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Open to Freelance") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.open_to_freelance?.[0]?.title}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Day Rate") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {
+                                d?.freelance_daily_rate_symbol_list
+                                  ?.currency_code
+                              }{" "}
+                              {d?.day_rate}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes(
+                            "Current Working Arrangements"
+                          ) ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.current_working_arrangements_list?.title}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes(
+                            "Desired Working Arrangements"
+                          ) ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.desired_working_arrangements_list.map(
+                                (d) => `${d?.title}, `
+                              )}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Law Degree") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d.law_degree === 0 ? "No" : "Yes"}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Qualified Lawyer") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d.qualified_lawyer === 0 ? "No" : "Yes"}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Jurisdiction") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d.jurisdiction}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes(
+                            "Post-Qualified Experience"
+                          ) ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.pqe}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Legal Specialism") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.legal_specialism}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Area of Law") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d.area_of_law}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes(
+                            "LegalTech Vendor/Consultancy"
+                          ) ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {
+                                d?.legaltech_vendor_or_consultancy_list?.[0]
+                                  ?.title
+                              }
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Customer Type") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.customer_type_list.map(
+                                (d) => `${d?.title}, `
+                              )}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Deal Size") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.deal_size_symbol_list?.currency_code}{" "}
+                              {d?.deal_size}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Sales quota") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.sales_quota_symbol_list?.currency_code}{" "}
+                              {d?.sales_quota}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("LegalTech Tools") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.legal_tech_tools.map((d) => `${d}, `)}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Tech Tools") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.tech_tools.map((d) => `${d}, `)}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Qualifications") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.qualification.map((d) => `${d}, `)}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Languages") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.languages_list.map((d) => `${d?.title}, `)}
+                            </TableCell>
+                          ) : null}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : checked === false && selectedOption === "Legal" ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Candidate #</TableCell>
+                        <TableCell align="right">Job Title</TableCell>
+                        <TableCell align="right">Years in Role</TableCell>
+                        <TableCell align="right">Law Degree</TableCell>
+                        <TableCell align="right">Qualified Lawyer</TableCell>
+                        <TableCell align="right">Jurisdiction</TableCell>
+                        <TableCell align="right">PQE</TableCell>
+                        <TableCell align="right">Area of Law</TableCell>
+                        <TableCell align="right">LegalTech Tools</TableCell>
+                        <TableCell align="right">Qualifications</TableCell>
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {candidatesListDetails.map((d, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                          className="pointer"
+                          onClick={(e) => handleEdit(d.uuid)}
+                        >
+                          <TableCell component="th" scope="row">
+                            #{d?.id}
+                          </TableCell>
+                          <TableCell align="right">{d.job_title}</TableCell>
+                          <TableCell align="right">
+                            {d.time_in_current_role_diff}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d.law_degree === 0 ? "No" : "Yes"}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d.qualified_lawyer === 0 ? "No" : "Yes"}
+                          </TableCell>
+                          <TableCell align="right">{d.jurisdiction}</TableCell>
+                          <TableCell align="right">{d.pqe_diff}</TableCell>
+                          <TableCell align="right">{d.area_of_law}</TableCell>
+                          <TableCell align="right">
+                            {d?.legal_tech_tools.map((d) => `${d}, `)}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.qualification.map((d) => `${d}, `)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : checked === false && selectedOption === "Tech" ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Candidate #</TableCell>
+                        <TableCell align="right">Job Title</TableCell>
+                        <TableCell align="right">Years in Role</TableCell>
+                        <TableCell align="right">Tech Tools</TableCell>
+                        <TableCell align="right">LegalTech Tools</TableCell>
+                        <TableCell align="right">Qualifications</TableCell>
+                        <TableCell align="right">
+                          Desired Working Arrangements
+                        </TableCell>
+                        <TableCell align="right">Notice period</TableCell>
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {candidatesListDetails.map((d, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                          className="pointer"
+                          onClick={(e) => handleEdit(d.uuid)}
+                        >
+                          <TableCell component="th" scope="row">
+                            #{d?.id}
+                          </TableCell>
+                          <TableCell align="right">{d.job_title}</TableCell>
+                          <TableCell align="right">
+                            {d.time_in_current_role_diff}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.tech_tools.map((d) => `${d}, `)}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.legal_tech_tools.map((d) => `${d}, `)}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.qualification.map((d) => `${d}, `)}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.desired_working_arrangements_list.map(
+                              (d) => `${d?.title}, `
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            {/* {d.notice_period == null ? "" : `${d.notice_period} Week`} */}
+                            {d.notice_period == 0 || d.notice_period == 1
+                              ? `${d.notice_period} Week`
+                              : d.notice_period == null
+                              ? ""
+                              : `${d.notice_period} Weeks`}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : checked === false && selectedOption === "Commercial" ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Candidate #</TableCell>
+                        <TableCell align="right">Job Title</TableCell>
+                        <TableCell align="right">Years in Role</TableCell>
+                        {/* <TableCell align="right">Desired Role</TableCell> */}
+                        <TableCell align="right">Desired salary</TableCell>
+                        <TableCell align="right">
+                          Desired Bonus / commission
+                        </TableCell>
+                        <TableCell align="right">Customer Type</TableCell>
+                        <TableCell align="right">Deal Size</TableCell>
+                        <TableCell align="right">Sales quota</TableCell>
+                        <TableCell align="right">Notice Period</TableCell>
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {candidatesListDetails.map((d, index) => (
+                        <TableRow
+                          TableRow
+                          key={index}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                          className="pointer"
+                          onClick={(e) => handleEdit(d.uuid)}
+                        >
+                          <TableCell component="th" scope="row">
+                            #{d?.id}
+                          </TableCell>
+                          <TableCell align="right">{d.job_title}</TableCell>
+                          <TableCell align="right">
+                            {d.time_in_current_role_diff}
+                          </TableCell>
+                          {/* <TableCell align="right" >
+                                                            {d?.desired_employer_type_list.map((d) => (`${ d?.title }, `))}
+                                                        </TableCell> */}
+                          <TableCell align="right">
+                            {d?.desired_salary_symbol_list?.currency_code}{" "}
+                            {d.desired_salary}
+                          </TableCell>
+                          <TableCell align="right">
+                            {
+                              d?.desired_bonus_or_commission_symbol_list
+                                ?.currency_code
+                            }{" "}
+                            {d.desired_bonus_or_commission}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.customer_type_list.map((d) => `${d?.title}, `)}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.deal_size_symbol_list?.currency_code}{" "}
+                            {d?.deal_size}
+                          </TableCell>
+                          <TableCell align="right">
+                            {d?.sales_quota_symbol_list?.currency_code}{" "}
+                            {d?.sales_quota}
+                          </TableCell>
+                          <TableCell align="right">
+                            {/* {d.notice_period == null ? "" : `${d.notice_period} Week`} */}
+                            {d.notice_period == 0 || d.notice_period == 1
+                              ? `${d.notice_period} Week`
+                              : d.notice_period == null
+                              ? ""
+                              : `${d.notice_period} Weeks`}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : checked === false && selectedOption === "Overview" ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Candidate #</TableCell>
+                        <TableCell align="right">Request CV</TableCell>
+                        <TableCell align="right">Shortlist</TableCell>
+                        <TableCell align="right">Job Title</TableCell>
+                        <TableCell align="right">Employer Type</TableCell>
+                        <TableCell align="right">Years in Role</TableCell>
+
+                        <TableCell align="right">Years in Industry</TableCell>
+                        <TableCell align="right">Status</TableCell>
+                        <TableCell align="right">Desired salary</TableCell>
+                        <TableCell align="right">
+                          D. Bonus/ commission
+                        </TableCell>
+                        {/* <TableCell align="right">Notice
+                                                                Period(wks)</TableCell>
+                                                            <TableCell align="right">PQE</TableCell>
+                                                            <TableCell align="right">LegalTech Tools</TableCell> */}
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {candidatesListDetails.map((d, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                          className="pointer"
+                        >
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            #{d?.id}
+                          </TableCell>
+                          {d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
+                            <TableCell align="right">
+                              {d?.is_cv_list_same_emp?.is_cv === 2 ? (
+                                <div className="active-status">Accepted</div>
+                              ) : d?.is_cv_list_same_emp?.is_cv === 1 ? (
+                                <div className="requested-status">
+                                  Requested
+                                </div>
+                              ) : d?.is_cv_list_same_emp?.is_cv === 3 ? (
+                                <div className="closed-status">Rejected</div>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          ) : (
+                            <TableCell
+                              align="right"
+                              onClick={(e) => handleOpenPopUp(d.uuid)}
+                            >
+                              <div className="request-status">Request</div>
+                            </TableCell>
+                          )}
+
+                          {
+                            <TableCell
+                              align="right"
+                              onClick={(e) => handleShortlist(d.uuid)}
+                            >
+                              {d?.emp_short_list === null ? (
+                                <div className="bg-Color-add d-flex justify-content-center">
+                                  Add
+                                </div>
+                              ) : d?.emp_short_list ? (
+                                <div className="bg-Color-remove d-flex justify-content-center">
+                                  Remove
+                                </div>
+                              ) : null}
+                            </TableCell>
+                          }
+
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {d.job_title}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {d.employer_type_list?.title}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {d.time_in_current_role_diff}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {d.time_in_industry_diff}
+                          </TableCell>
+
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {d.status === 1 ? (
+                              <div className="bg-Color-success d-flex justify-content-center">
+                                Active
+                              </div>
+                            ) : d.status === 2 ? (
+                              <div className="bg-Color-warning d-flex justify-content-center">
+                                Passive
+                              </div>
+                            ) : d.status === 3 ? (
+                              <div className="bg-Color-info d-flex justify-content-center">
+                                Very Passive
+                              </div>
+                            ) : d.status === 4 ? (
+                              <div className="bg-Color-error d-flex justify-content-center">
+                                Closed
+                              </div>
+                            ) : null}
+                          </TableCell>
+
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {d?.desired_salary_symbol_list?.currency_code}{" "}
+                            {d.desired_salary}
+                            {/* <CurrencyFormat value={d.desired_salary} displayType={'text'} thousandSeparator={true} prefix={d?.desired_salary_symbol_list?.symbol} /> */}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            onClick={(e) => handleEdit(d.uuid)}
+                          >
+                            {
+                              d?.desired_bonus_or_commission_symbol_list
+                                ?.currency_code
+                            }{" "}
+                            {d.desired_bonus_or_commission}
+                            {/* <CurrencyFormat value={d.desired_bonus_or_commission} displayType={'text'} thousandSeparator={true} prefix={d?.desired_bonus_or_commission_symbol_list?.symbol} /> */}
+                          </TableCell>
+                          {/* <TableCell align="right" onClick={(e) => handleEdit(d.uuid)}>{d.notice_period} Week</TableCell>
                                                                 <TableCell align="right" onClick={(e) => handleEdit(d.uuid)}>{d.pqe_diff}</TableCell>
                                                                 <TableCell align="right" onClick={(e) => handleEdit(d.uuid)}>
                                                                     {d?.legal_tech_tools.map((d) => (`${d}, `))}
                                                                 </TableCell> */}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                ) : null
-                // <TableContainer component={Paper}>
-                //     <Table aria-label="simple table">
-                //         <TableHead>
-                //             <TableRow>
-                //                 <TableCell>Candidate #</TableCell>
-                //                 <TableCell align="right">Request CV</TableCell>
-                //                 {selctedColumns.length > 0 && selctedColumns.map((d, i) => (
-                //                     <TableCell key={i}>{d}</TableCell>
-                //                 ))}
-
-                //                 {/* {testSelctedColumns.length > 0 && testSelctedColumns.map((d, i) => (
-                //     <TableCell key={i}>{d?.title}</TableCell>
-                // ))} */}
-                //             </TableRow>
-                //         </TableHead>
-
-                //         <TableBody>
-                //             {candidatesListDetails.map((d, index) => (
-                //                 <TableRow
-                //                     key={index}
-                //                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                //                     className="pointer"
-                //                 >
-                //                     <TableCell component="th" scope="row" >
-                //                         #{d?.id}
-                //                     </TableCell>
-
-                //                     {(d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3)) ?
-                //                         <TableCell
-                //                             align="right"
-                //                         >
-                //                             {(d?.is_cv_list_same_emp?.is_cv === 2) ?
-                //                                 <div className="active-status">Accepted</div>
-                //                                 :
-                //                                 (d?.is_cv_list_same_emp?.is_cv === 1) ?
-                //                                     <div className="requested-status">Requested</div>
-                //                                     :
-                //                                     (d?.is_cv_list_same_emp?.is_cv === 3) ?
-                //                                         <div className="closed-status">Rejected</div>
-                //                                         :
-                //                                         null
-                //                             }
-                //                         </TableCell>
-                //                         :
-                //                         <TableCell
-                //                             align="right"
-                //                             onClick={(e) => handleOpenPopUp(d.uuid)}
-                //                         >
-                //                             <div className="request-status">Request</div>
-                //                         </TableCell>
-                //                     }
-
-                //                     {selctedColumns.includes("Job Title") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)} >
-                //                             {d?.job_title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Employer Type") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.employer_type_list?.title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Time in Current Role") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.time_in_current_role_diff}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Time in Industry") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.time_in_industry_diff}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Status") ?
-                //                         <TableCell align="right" onClick={(e) => handleEdit(d.uuid)}>
-
-                //                             {d.status === 1 ?
-
-                //                                 <div className='bg-Color-success d-flex justify-content-center'>
-                //                                     Active
-                //                                 </div>
-                //                                 : d.status === 2 ?
-                //                                     <div className='bg-Color-info d-flex justify-content-center'>
-                //                                         Passive
-                //                                     </div>
-
-                //                                     : d.status === 3 ?
-                //                                         <div className='bg-Color-warning d-flex justify-content-center'>
-                //                                             Very Passive
-                //                                         </div>
-                //                                         : d.status === 4 ?
-                //                                             <div className='bg-Color-error d-flex justify-content-center'>
-                //                                                 Closed
-                //                                             </div>
-                //                                             : null}
-
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Desired Employer Type") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.desired_employer_types.map((d) => (`${d?.desired_employer_types_view?.title}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Line Management") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.line_management}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Notice Period") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d.notice_period == null ? "" : `${d.notice_period} Week`}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Current Country") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.current_country_list?.country_name}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Desired Country") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.desired_country_list.map((d) => (`${d?.country_name}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Current Region") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.current_regions_list?.title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Current Salary") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)} >
-                //                             {d?.current_salary_symbol_list?.currency_code} {d.current_salary}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Current Bonus / Commission") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.current_salary_symbol_list?.currency_code} {d.current_salary}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Desired Salary") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.desired_salary_symbol_list?.currency_code} {d.desired_salary}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Desired Bonus / Commission") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.desired_bonus_or_commission_symbol_list?.currency_code} {d.desired_bonus_or_commission}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Current Freelancer") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.current_freelance?.[0]?.title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Open to Freelance") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.open_to_freelance?.[0]?.title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Day Rate") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.freelance_daily_rate_symbol_list?.currency_code} {d?.day_rate}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Current Working Arrangements") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.current_working_arrangements_list?.title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Desired Working Arrangements") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.desired_working_arrangements_list.map((d) => (`${d?.title}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Law Degree") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d.law_degree === 0 ? "No" : "Yes"}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Qualified Lawyer") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d.qualified_lawyer === 0 ? "No" : "Yes"}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Jurisdiction") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d.jurisdiction}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Post-Qualified Experience") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.pqe}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Legal Specialism") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.legal_specialism}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Area of Law") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d.area_of_law}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("LegalTech Vendor/Consultancy") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.legaltech_vendor_or_consultancy_list?.[0]?.title}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Customer Type") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.customer_type_list.map((d) => (`${d?.title}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Deal Size") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.deal_size_symbol_list?.currency_code} {d?.deal_size}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Sales quota") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.sales_quota_symbol_list?.currency_code} {d?.sales_quota}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("LegalTech Tools") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.legal_tech_tools.map((d) => (`${d}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Tech Tools") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.tech_tools.map((d) => (`${d}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Qualifications") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.qualification.map((d) => (`${d}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                     {selctedColumns.includes("Languages") ?
-                //                         <TableCell component="th" scope="row" onClick={(e) => handleEdit(d.uuid)}>
-                //                             {d?.languages_list.map((d) => (`${d?.title}, `))}
-                //                         </TableCell>
-                //                         : null}
-
-                //                 </TableRow>
-                //             ))}
-                //         </TableBody>
-
-                //     </Table>
-                // </TableContainer>
-              }
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : null}
             </div>
           </div>
         </div>

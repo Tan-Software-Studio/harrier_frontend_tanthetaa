@@ -14,6 +14,72 @@
             padding: 20px 0px;
         }
 
+        .left-side-buttons {
+            margin: 8px 0;
+            .title {
+                font-family: 'Work Sans';
+                font-style: normal;
+                font-weight: 400;
+                font-size: 16px;
+                color: #5C9AD4;
+            }
+            .button-box {
+                display: flex;
+                justify-content: center;
+                place-items: center;
+                min-width: 120px;
+                cursor: pointer;
+
+                .active-status {
+                    font-family: 'Work Sans';
+                    font-weight: 500;
+                    line-height: 16px;
+                    color: #1FAD83;
+                    padding: 4px 8px;
+                    background: #D2EFE6;
+                    border-radius: 3px;
+                    width: max-content;
+                }
+    
+                .requested-status {
+                    font-family: 'Work Sans';
+                    font-weight: 500;
+                    line-height: 16px;
+                    color: #EA9601;
+                    padding: 4px 8px;
+                    background: #FBEACC;
+                    border-radius: 3px;
+                    width: max-content;
+    
+                }
+    
+                .closed-status {
+                    font-family: 'Work Sans';
+                    font-weight: 500;
+                    line-height: 16px;
+                    color: #C80000;
+                    padding: 4px 8px;
+                    background: #F5CCCC;
+                    border-radius: 3px;
+                    width: max-content;
+    
+                }
+    
+                .request-status {
+                    font-family: 'Work Sans';
+                    font-weight: 500;
+                    line-height: 16px;
+                    color: #034ADC;
+                    padding: 4px 8px;
+                    background: #B3CCFF;
+                    border-radius: 3px;
+                    width: max-content;
+    
+                }
+            } 
+            
+        }
+
         .question-title {
             font-weight: 600;
             font-size: 20px;
@@ -41,11 +107,14 @@
             font-size: 16px;
             line-height: 19px;
             color: #323232;
+            margin: 5px 0;
+
 
             .bg-Color-success {
                 max-width: 70px;
                 min-width: 70px;
                 padding: 5px 10px;
+                margin: 5px 0;
                 border-radius: 5px;
                 color: #1FAD83;
                 background-color: #D2EFE6;
@@ -55,6 +124,7 @@
                 max-width: 120px;
                 min-width: 120px;
                 padding: 5px 10px;
+                margin: 5px 0;
                 border-radius: 5px;
                 color: #034ADC;
                 background-color: #B3CCFF;
@@ -63,8 +133,8 @@
             .bg-Color-warning {
                 max-width: 80px;
                 min-width: 80px;
-
                 padding: 5px 10px;
+                margin: 5px 0;
                 border-radius: 5px;
                 color: #EA9601;
                 background-color: #FBEACC;
@@ -74,6 +144,7 @@
                 max-width: 75px;
                 min-width: 75px;
                 padding: 5px 10px;
+                margin: 5px 0;
                 border-radius: 5px;
                 color: #C80000;
                 background-color: #F5CCCC;
@@ -92,6 +163,7 @@
             // width: max-content;
             width: fit-content;
             padding: 4px 8px;
+            margin: 5px 0;
         }
 
         .answer-bg-active {
@@ -104,7 +176,7 @@
             border-radius: 5px;
             width: max-content;
             padding: 4px 8px;
-
+            margin: 5px 0;
         }
 
         .bg-sky {

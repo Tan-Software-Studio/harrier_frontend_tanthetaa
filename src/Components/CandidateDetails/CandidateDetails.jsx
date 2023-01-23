@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import NewHeader from "../Common/NewHeader/NewHeader";
 // ====== Css =====
 import styles from "./CandidateDetails.module.scss";
 import backButton from "../../img/common/back.png";
+import closeIcon from "../../img/common/cancel-icon.png";
+import doneIcon from "../../img/Update-Employer/Vector.png";
+import CloseIcon from "@mui/icons-material/Close";
 import Encrypt from "../../customHook/customHook/EncryptDecrypt/Encrypt";
 import axiosInstanceAuth from "../../apiServices/axiosInstanceAuth";
 import Decrypt from "../../customHook/customHook/EncryptDecrypt/Decrypt";
 import { toast } from "react-toastify";
 import Copyright from "../Common/Copyright/Copyright";
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Typography,
+} from "@mui/material";
 
 const CandidateDetails = () => {
   const { uuid } = useParams();
@@ -24,6 +35,12 @@ const CandidateDetails = () => {
 
   const [candidate, setCandidate] = useState({});
 
+  const [UUIDSelected, setUUIDSelected] = useState({});
+  const [jobTitleSelected, setJobTitleSelected] = useState();
+  const [jobNames, setJobNames] = useState([]);
+  const [openPopUp, setOpenPopUp] = useState(false);
+  const [openThankYouPopUp, setOpenThankYouPopUp] = useState(false);
+
   const [EmployerTypesOptions, setEmployerTypesOptions] = useState([]);
   const [CountryOptions, setCountryOptions] = useState([]);
   const [RegionOptions, setRegionOptions] = useState([]);
@@ -35,6 +52,17 @@ const CandidateDetails = () => {
   const [TechToolsOptions, setTechToolsOptions] = useState([]);
   const [QualificationsOptions, setQualificationsOptions] = useState([]);
   const [LanguagesOptions, setLanguagesOptions] = useState([]);
+
+  const style = {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
 
   useEffect(() => {
     getSingleCandidatedetails();
@@ -54,7 +82,7 @@ const CandidateDetails = () => {
       .then((res) => {
         const data = Decrypt(res?.data?.data);
         const mydata = JSON.parse(data);
-        console.log("---> data", mydata);
+        console.log("---> SINGLE VIEW", mydata);
 
         if (res?.data?.success) {
           setCandidate(mydata);
@@ -91,6 +119,110 @@ const CandidateDetails = () => {
       });
   };
 
+  const handleShortlist = (uuid) => {
+    isShortlisted(uuid);
+  };
+
+  const isShortlisted = async (e) => {
+    const encryptedData = Encrypt(
+      JSON.stringify({
+        c_uuid: e,
+      })
+    );
+    await axiosInstanceAuth
+      .post("/v1/emp/shortlist/addremove/candidate", {
+        response: encryptedData,
+      })
+      .then((res) => {
+        const msg = Decrypt(res?.data?.message).replace(/"/g, " ");
+
+        if (res?.data?.success) {
+          toast.success(msg);
+          getSingleCandidatedetails();
+        } else {
+          toast.error(msg);
+        }
+      })
+      .catch((err) => {
+        console.log("err --->", err);
+      });
+  };
+
+  const handleOpenPopUp = (uuid) => {
+    setUUIDSelected(uuid);
+    getJobNames();
+    setOpenPopUp(true);
+  };
+
+  const handleClosePopUp = () => {
+    setOpenPopUp(false);
+  };
+
+  const handleOpenThankYouPopUp = () => {
+    setOpenThankYouPopUp(true);
+  };
+
+  const handleCloseThankYouPopUp = () => {
+    setOpenThankYouPopUp(false);
+  };
+
+  const handleCreateJob = () => {
+    navigate("/create-job");
+  };
+
+  const handleSubmit = () => {
+    submitCvRequest();
+  };
+
+  const getJobNames = async () => {
+    const encryptedData = Encrypt(JSON.stringify({}));
+    await axiosInstanceAuth
+      .post("/v1/emp/live/job/names", {
+        response: encryptedData,
+      })
+      .then((res) => {
+        const msg = Decrypt(res?.data?.message).replace(/"/g, " ");
+        const mydata = JSON.parse(Decrypt(res?.data?.data));
+
+        if (res?.data?.success) {
+          setJobNames(mydata);
+        } else {
+          toast.error(msg);
+        }
+      })
+      .catch((err) => {
+        console.log("err --->", err);
+      });
+  };
+
+  const submitCvRequest = async () => {
+    const encryptedData = Encrypt(
+      JSON.stringify({
+        job_id: jobTitleSelected,
+        c_uid: UUIDSelected,
+      })
+    );
+    await axiosInstanceAuth
+      .post("/v1/emp/cv/request/post", {
+        response: encryptedData,
+      })
+      .then((res) => {
+        const msg = Decrypt(res?.data?.message).replace(/"/g, " ");
+        const mydata = JSON.parse(Decrypt(res?.data?.data));
+
+        if (res?.data?.success) {
+          setOpenPopUp(false);
+          handleOpenThankYouPopUp();
+        } else {
+          toast.error(msg);
+        }
+        setOpenPopUp(false);
+      })
+      .catch((err) => {
+        console.log("err --->", err);
+      });
+  };
+
   return (
     <>
       <NewHeader isLoggedIn={isLoggedIn} />
@@ -101,12 +233,57 @@ const CandidateDetails = () => {
               className="bg-transparent border-0 back-button d-flex align-items-center"
               onClick={() => navigate("/candidates")}
             >
-              {" "}
               <img src={backButton} alt="" /> <span> Back </span>{" "}
             </button>
 
+            {/* ---- Shortlist ---- */}
+            <div className="d-flex justify-content-end align-items-center left-side-buttons">
+              <div className="title">Shortlist</div>
+              {
+                <div
+                  align="right"
+                  className="mx-2 button-box"
+                  onClick={(e) => handleShortlist(candidate?.uuid)}
+                >
+                  {candidate?.emp_short_list === null ? (
+                    <div className="active-status d-flex justify-content-center">
+                      Add
+                    </div>
+                  ) : candidate?.emp_short_list ? (
+                    <div className="closed-status d-flex justify-content-center">
+                      Remove
+                    </div>
+                  ) : null}
+                </div>
+              }
+            </div>
+
+            {/* ---- Request CV ---- */}
+            <div className="d-flex justify-content-end align-items-center left-side-buttons">
+              <div className="title">Request CV</div>
+              {candidate?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
+                <div align="right" className="mx-2 button-box">
+                  {candidate?.is_cv_list_same_emp?.is_cv === 2 ? (
+                    <div className="active-status">Accepted</div>
+                  ) : candidate?.is_cv_list_same_emp?.is_cv === 1 ? (
+                    <div className="requested-status">Requested</div>
+                  ) : candidate?.is_cv_list_same_emp?.is_cv === 3 ? (
+                    <div className="closed-status">Rejected</div>
+                  ) : null}
+                </div>
+              ) : (
+                <div
+                  align="right"
+                  className="mx-2 button-box"
+                  onClick={(e) => handleOpenPopUp(candidate?.uuid)}
+                >
+                  <div className="request-status">Request</div>
+                </div>
+              )}
+            </div>
+
             <div className="row">
-              <div className="col-lg-4">
+              <div className="col-lg-4 my-3">
                 <div className="candidate-bg">
                   <h3 className="question-title px-30">Core Questions</h3>
                   <p className="border-btm"></p>
@@ -335,7 +512,7 @@ const CandidateDetails = () => {
                 </div>
               </div>
 
-              <div className="col-lg-8">
+              <div className="col-lg-8 my-3">
                 <div className="candidate-bg">
                   <h3 className="question-title px-30">Role Specific</h3>
                   <p className="border-btm"></p>
@@ -572,6 +749,115 @@ const CandidateDetails = () => {
         <div className="fixed-footer">
           <Copyright />
         </div>
+      </div>
+
+      {/* ===== Select Job Pop Up ====== */}
+
+      <div div>
+        <Dialog open={openPopUp} onClose={handleClosePopUp}>
+          <div className="job-update-container">
+            <DialogContent>
+              <DialogContentText>
+                <div className="job-update-wrapper">
+                  <div
+                    className="d-flex justify-content-end"
+                    onClick={handleClosePopUp}
+                  >
+                    <CloseIcon />
+                  </div>
+                  <div className="main-title">Select Live Job</div>
+                  <div className="sub-title">
+                    Select Live Job for which you want to approach the candidate
+                  </div>
+                  <div
+                    component="form"
+                    role="form"
+                    className="form-content new-mh-height"
+                  >
+                    {jobNames.length > 0 &&
+                      jobNames.map((d, i) => {
+                        return (
+                          <div className="radioBtn detail-content">
+                            <label class="form-check-label" for="radio1">
+                              {d?.job_title}
+                            </label>
+                            <input
+                              type="radio"
+                              class="form-check-input"
+                              name="optradio"
+                              value={d?.id}
+                              onChange={(e) => {
+                                setJobTitleSelected(e.target.value);
+                              }}
+                            />
+                          </div>
+                        );
+                      })}
+                    <button type="submit" class="btn btn-primary mt-3">
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <button className="pop-up-create-btn" onClick={handleCreateJob}>
+                Create job
+              </button>
+              <button className="pop-up-submit-btn" onClick={handleSubmit}>
+                Select Job
+              </button>
+            </DialogActions>
+          </div>
+        </Dialog>
+      </div>
+
+      {/* ===== Thank You Pop Up ====== */}
+
+      <div>
+        <dialog
+          open={openThankYouPopUp}
+          onClose={handleCloseThankYouPopUp}
+          className="z-index-99 border-0"
+        >
+          <div className="container">
+            <div className="modal-size">
+              <Box sx={style}>
+                <div className="text-end">
+                  <button
+                    className="bg-transparent border-0 text-right"
+                    onClick={handleCloseThankYouPopUp}
+                  >
+                    <img src={closeIcon} alt="" />
+                  </button>
+                </div>
+                <div className="inside-modal">
+                  <div className="text-center done-icon">
+                    <img src={doneIcon} alt="" />
+                  </div>
+                  <Typography
+                    id="modal-modal-title"
+                    className="modal-modal-title mt-30"
+                  >
+                    <h1>Congratulations!</h1>
+                  </Typography>
+                  <Typography className="modal-modal-description mt-17">
+                    <p>
+                      You have successfully sent the Candidate a CV Request to
+                      candidate. You will be notified when the Candidate decides
+                      to accept or reject your CV Request.
+                    </p>
+                  </Typography>
+                  <div className="text-center mt-40">
+                    <Link to="/live-jobs">
+                      <button className="pop-up-submit-btn">Done</button>
+                    </Link>
+                  </div>
+                </div>
+              </Box>
+            </div>
+          </div>
+        </dialog>
       </div>
     </>
   );
