@@ -237,7 +237,7 @@ const CandidateDetails = () => {
             </button>
 
             {/* ---- Shortlist ---- */}
-            <div className="d-flex justify-content-end align-items-center left-side-buttons">
+            {/* <div className="d-flex justify-content-end align-items-center left-side-buttons">
               <div className="title">Shortlist</div>
               {
                 <div
@@ -256,10 +256,10 @@ const CandidateDetails = () => {
                   ) : null}
                 </div>
               }
-            </div>
+            </div> */}
 
             {/* ---- Request CV ---- */}
-            <div className="d-flex justify-content-end align-items-center left-side-buttons">
+            {/* <div className="d-flex justify-content-end align-items-center left-side-buttons">
               <div className="title">Request CV</div>
               {candidate?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
                 <div align="right" className="mx-2 button-box">
@@ -280,7 +280,7 @@ const CandidateDetails = () => {
                   <div className="request-status">Request</div>
                 </div>
               )}
-            </div>
+            </div> */}
 
             <div className="row">
               <div className="col-lg-4 my-3">
