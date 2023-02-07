@@ -2327,9 +2327,9 @@ const Listofcandidates = () => {
                   </Typography>
                   <Typography className="modal-modal-description mt-17">
                     <p>
-                      You have successfully sent the Candidate a CV Request to
-                      candidate. You will be notified when the Candidate decides
-                      to accept or reject your CV Request.
+                      You have successfully sent the Candidate a CV Request. You
+                      will be notified when the Candidate decides to accept or
+                      reject your CV Request.
                     </p>
                   </Typography>
                   <div className="text-center mt-40">
