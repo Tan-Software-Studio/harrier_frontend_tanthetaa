@@ -587,6 +587,7 @@ const Listofcandidates = () => {
       .then((res) => {
         const myData = JSON.parse(Decrypt(res?.data?.data));
         const candidatesList = myData?.data;
+        // console.log("--->  VIEW", candidatesList);
 
         if (res?.data?.success) {
           setCandidatesListDetails(candidatesList);
@@ -670,7 +671,8 @@ const Listofcandidates = () => {
           .includes(e.target.value.toLowerCase());
         let notice_period = i?.notice_period
           .toString()
-          .includes(e.target.value);
+          ?.toLowerCase()
+          .includes(e.target.value?.toLowerCase());
 
         let customer_type_list = i?.customer_type_list.map((d, i) =>
           (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
@@ -681,16 +683,138 @@ const Listofcandidates = () => {
         let qualification_list = i?.qualification.map((d, i) =>
           d.toLowerCase().includes(e.target.value.toLowerCase())
         );
+
         let desired_working_arrangements_list =
           i?.desired_working_arrangements_list.map((d, i) =>
             (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
           );
+
+        let languages_list = i?.languages_list.map((d, i) =>
+          (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
+        );
+
+        let line_management = i?.line_management
+          .toString()
+          ?.toLowerCase()
+          .includes(e.target.value?.toLowerCase());
+
+        let desired_employer_types = i?.desired_employer_types.map((d, i) =>
+          (d?.desired_employer_types_view?.title)
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())
+        );
+
+        let current_country_list = i?.current_country_list?.country_name
+          .toString()
+          ?.toLowerCase()
+          .includes(e.target.value?.toLowerCase());
+
+        let current_regions_list = i?.current_regions_list?.title
+          .toString()
+          ?.toLowerCase()
+          .includes(e.target.value?.toLowerCase());
+
+        let desired_country_list = i?.desired_country_list.map((d, i) =>
+          (d?.country_name).toLowerCase().includes(e.target.value.toLowerCase())
+        );
+
+        let freelance_daily_rate_symbol_list =
+          i?.freelance_daily_rate_symbol_list?.currency_code
+            .toString()
+            ?.toLowerCase()
+            .includes(e.target.value?.toLowerCase());
+
+        let day_rate = i?.day_rate
+          .toString()
+          ?.toLowerCase()
+          .includes(e.target.value?.toLowerCase());
+
+        let current_working_arrangements_list =
+          i?.current_working_arrangements_list?.title
+            .toString()
+            ?.toLowerCase()
+            .includes(e.target.value?.toLowerCase());
+
+        let legaltech_vendor_or_consultancy_list =
+          i?.legaltech_vendor_or_consultancy_list?.[0]?.title
+            ?.toLowerCase()
+            .includes(e.target.value.toLowerCase());
+
+        let tech_tools = i?.tech_tools.map((d, i) =>
+          d?.toLowerCase().includes(e.target.value.toLowerCase())
+        );
+
+        let profile_about = i?.profile_about
+          ?.toLowerCase()
+          .includes(e.target.value?.toLowerCase());
+
+        // console.log("------- desired_employer_types", desired_employer_types);
+        // console.log("------- desired_country_list", desired_country_list);
+        // console.log(
+        //   "------- desired_working_arrangements_list",
+        //   desired_working_arrangements_list
+        // );
+        // console.log("------- languages_list", languages_list);
+        // console.log("------- customer_type_list", customer_type_list);
+        // console.log("------- legal_tech_tools_list", legal_tech_tools_list);
+        // console.log("------- tech_tools", tech_tools);
+        console.log("------- qualification_list", qualification_list);
 
         return (
           job_title ||
           employer_type_list ||
           time_in_current_role_diff ||
           time_in_industry_diff ||
+          line_management ||
+          desired_employer_types?.[0] ||
+          desired_employer_types?.[1] ||
+          desired_employer_types?.[2] ||
+          desired_employer_types?.[3] ||
+          desired_employer_types?.[4] ||
+          desired_employer_types?.[5] ||
+          desired_employer_types?.[6] ||
+          desired_employer_types?.[7] ||
+          desired_employer_types?.[8] ||
+          desired_employer_types?.[9] ||
+          current_country_list ||
+          current_regions_list ||
+          desired_country_list?.[0] ||
+          desired_country_list?.[1] ||
+          desired_country_list?.[2] ||
+          desired_country_list?.[3] ||
+          desired_country_list?.[4] ||
+          desired_country_list?.[5] ||
+          desired_country_list?.[6] ||
+          desired_country_list?.[7] ||
+          desired_country_list?.[8] ||
+          desired_country_list?.[9] ||
+          freelance_daily_rate_symbol_list ||
+          day_rate ||
+          desired_working_arrangements_list?.[0] ||
+          desired_working_arrangements_list?.[1] ||
+          desired_working_arrangements_list?.[2] ||
+          desired_working_arrangements_list?.[3] ||
+          desired_working_arrangements_list?.[4] ||
+          desired_working_arrangements_list?.[5] ||
+          desired_working_arrangements_list?.[6] ||
+          desired_working_arrangements_list?.[7] ||
+          desired_working_arrangements_list?.[8] ||
+          desired_working_arrangements_list?.[9] ||
+          languages_list?.[0] ||
+          languages_list?.[1] ||
+          languages_list?.[2] ||
+          languages_list?.[3] ||
+          languages_list?.[4] ||
+          languages_list?.[5] ||
+          languages_list?.[6] ||
+          languages_list?.[7] ||
+          languages_list?.[8] ||
+          languages_list?.[9] ||
+          current_working_arrangements_list ||
+          // desired_region_list ||
+          // status ||
+          // freelance_current ||
+          // freelance_future ||
           current_salary ||
           current_bonus_or_commission ||
           desired_salary ||
@@ -703,14 +827,54 @@ const Listofcandidates = () => {
           current_bonus_or_commission_symbol_list ||
           desired_salary_symbol_list ||
           desired_bonus_or_commission_symbol_list ||
+          // law_degree ||
+          // qualified_lawyer ||
           jurisdiction ||
           pqe ||
           area_of_law ||
           notice_period ||
+          legaltech_vendor_or_consultancy_list ||
           customer_type_list?.[0] ||
+          customer_type_list?.[1] ||
+          customer_type_list?.[2] ||
+          customer_type_list?.[3] ||
+          customer_type_list?.[4] ||
+          customer_type_list?.[5] ||
+          customer_type_list?.[6] ||
+          customer_type_list?.[7] ||
+          customer_type_list?.[8] ||
+          customer_type_list?.[9] ||
           legal_tech_tools_list?.[0] ||
+          legal_tech_tools_list?.[1] ||
+          legal_tech_tools_list?.[2] ||
+          legal_tech_tools_list?.[3] ||
+          legal_tech_tools_list?.[4] ||
+          legal_tech_tools_list?.[5] ||
+          legal_tech_tools_list?.[6] ||
+          legal_tech_tools_list?.[7] ||
+          legal_tech_tools_list?.[8] ||
+          legal_tech_tools_list?.[9] ||
+          tech_tools?.[0] ||
+          tech_tools?.[1] ||
+          tech_tools?.[2] ||
+          tech_tools?.[3] ||
+          tech_tools?.[4] ||
+          tech_tools?.[5] ||
+          tech_tools?.[6] ||
+          tech_tools?.[7] ||
+          tech_tools?.[8] ||
+          tech_tools?.[9] ||
           qualification_list?.[0] ||
-          desired_working_arrangements_list?.[0]
+          qualification_list?.[1] ||
+          qualification_list?.[2] ||
+          qualification_list?.[3] ||
+          qualification_list?.[4] ||
+          qualification_list?.[5] ||
+          qualification_list?.[6] ||
+          qualification_list?.[7] ||
+          qualification_list?.[8] ||
+          qualification_list?.[9] ||
+          profile_about
         );
       });
       setCandidatesListDetails(searchData);
