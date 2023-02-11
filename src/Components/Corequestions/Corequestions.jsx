@@ -1139,7 +1139,7 @@ const Corequestions = () => {
                     className={`${
                       toggleState === 2 ? "tabs tabs-active " : "tabs"
                     } mt-20`}
-                    onClick={() => toggleTab(2)}
+                    // onClick={() => toggleTab(2)}
                   >
                     <div className="d-flex flex-column">
                       <span> Role Specific </span>
@@ -1152,7 +1152,7 @@ const Corequestions = () => {
                     className={`${
                       toggleState === 3 ? "tabs tabs-active" : "tabs"
                     } mt-20`}
-                    onClick={() => toggleTab(3)}
+                    // onClick={() => toggleTab(3)}
                   >
                     <span> Diversity & Inclusion </span>
                   </button>
@@ -1160,7 +1160,7 @@ const Corequestions = () => {
                     className={`${
                       toggleState === 4 ? "tabs tabs-active" : "tabs"
                     } mt-20`}
-                    onClick={() => toggleTab(4)}
+                    // onClick={() => toggleTab(4)}
                   >
                     <span> Data Privacy</span>
                   </button>
