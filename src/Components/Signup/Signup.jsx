@@ -21,6 +21,8 @@ import {
   InputLabel,
   TextField,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+
 import { alpha, styled } from "@mui/material/styles";
 import { Box } from "@mui/system";
 import Typography from "@mui/material/Typography";
@@ -45,6 +47,7 @@ const Signup = () => {
       },
       500
     );
+    getOptions();
   }, []);
 
   const [open, setOpen] = useState(false);
@@ -76,6 +79,8 @@ const Signup = () => {
     email: "",
     url: "",
   });
+  const [employerTypeOption, setEmployerTypeOption] = useState([]);
+  const [sendEmpType, setSendEmpType] = useState({ id: "", title: "" });
 
   const BootstrapInput = styled(InputBase)(({ theme }) => ({
     "label + &": {
@@ -159,11 +164,28 @@ const Signup = () => {
 
   // =======  API ======
 
+  const getOptions = async () => {
+    await axiosInstance
+      .get(`/v1/master_tables_list`)
+      .then((res) => {
+        const myData = JSON.parse(Decrypt(res?.data?.data));
+        const employersTypeList = myData?.mst_employer_types;
+
+        if (res?.data?.success) {
+          setEmployerTypeOption(employersTypeList);
+        }
+      })
+      .catch((err) => {
+        console.log("err--->", err);
+      });
+  };
+
   const handleSubmit = async () => {
     const response = Encrypt(
       JSON.stringify({
         name: inputData.name,
-        uk_address: inputData.uk_address,
+        // uk_address: inputData.uk_address,
+        uk_address: sendEmpType?.title,
         hq_address: inputData.hq_address,
         billing_address: inputData.billing_address,
         contact_details: inputData.contact_details,
@@ -231,10 +253,11 @@ const Signup = () => {
                     ></TextField>
                   </FormControl>
                 </div>
-                <div className="col-lg-6">
+                {/* <div className="col-lg-6">
                   <FormControl variant="standard" className="mt-20">
                     <InputLabel shrink htmlFor="bootstrap-input">
-                      UK Address<span className="text-red"> * </span>
+                      UK Address
+                      <span className="text-red"> * </span>
                     </InputLabel>
                     <TextField
                       name="uk_address"
@@ -242,11 +265,30 @@ const Signup = () => {
                       onChange={onchangeinput}
                     ></TextField>
                   </FormControl>
+                </div> */}
+                <div className="col-lg-6">
+                  <FormControl variant="standard" className="mt-20">
+                    <InputLabel shrink htmlFor="bootstrap-input">
+                      Employer Types
+                      <span className="text-red"> * </span>
+                    </InputLabel>
+                    <Autocomplete
+                      options={employerTypeOption}
+                      getOptionLabel={(option) => option.title || ""}
+                      value={sendEmpType || {}}
+                      onChange={(e, value) => {
+                        setSendEmpType(value);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                      className="single-auto-compelete-width"
+                    />
+                  </FormControl>
                 </div>
                 <div className="col-lg-6">
                   <FormControl variant="standard" className="mt-20">
                     <InputLabel shrink htmlFor="bootstrap-input">
-                      HQ Address(if other than UK address)
+                      {/* HQ Address(if other than UK address) */}
+                      Office Address
                     </InputLabel>
                     <TextField
                       name="hq_address"
@@ -346,7 +388,6 @@ const Signup = () => {
                     ></TextField>
                   </FormControl>
                 </div>
-
                 <div className="checkBox d-flex align-items-start mt-3 ">
                   <Checkbox
                     className="ps-0"
@@ -396,13 +437,11 @@ const Signup = () => {
                     credentials.
                   </p>
                 </div>
-
                 {/* <div className='checkBox d-flex align-items-center'>
                                     <Checkbox className='ps-0' onChange={marketCheck} checked={marketing ? true : false} onClick={(e) => setMarketSignup(!marketSignup)} />
                                     <p className='content'>
                                         <Link to=""> marketing signup</Link></p>
                                 </div> */}
-
                 <Box className="mt-50 text-center bg-transparent shadow-none">
                   <Button
                     onClick={handleSubmit}
@@ -413,7 +452,6 @@ const Signup = () => {
                     Sign Up
                   </Button>
                 </Box>
-
                 <div>
                   <Modal
                     open={open}

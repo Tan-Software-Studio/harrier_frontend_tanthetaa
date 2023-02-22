@@ -15,6 +15,12 @@
             box-shadow: 1px 1px 9px rgba(0, 0, 0, 0.1);
             border-radius: 30px;
             padding: 33px 64px 44px 64px;
+
+            .single-auto-compelete-width .MuiOutlinedInput-root {
+                padding: 0;
+                max-height: 44px !important;
+            }
+            
         }
 
         .sign-up-icon {
