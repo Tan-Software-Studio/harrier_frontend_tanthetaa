@@ -395,15 +395,14 @@ const Home = () => {
               </p>
               <p className="font-20 mt-20 text-justify">
                 The Harrier Candidates platform was born out of our sister
-                service,
-                {`  `}
-                <a
+                service, Harrier Search
+                {/* <a
                   target="blank"
                   href="https://harriersearch.com/"
                   className="light-blue-color text-decoration-underline"
                 >
                   Harrier Search
-                </a>
+                </a> */}
                 , a more traditional recruitment agency serving law firms,
                 LegalTech companies, consultancies and in-house Legal Operations
                 teams. We are happy to provide that headhunter service, but
