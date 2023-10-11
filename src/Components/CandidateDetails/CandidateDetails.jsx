@@ -52,6 +52,8 @@ const CandidateDetails = () => {
   const [TechToolsOptions, setTechToolsOptions] = useState([]);
   const [QualificationsOptions, setQualificationsOptions] = useState([]);
   const [LanguagesOptions, setLanguagesOptions] = useState([]);
+  const [jobStatusOptions, setJobStatusOptions] = useState([]);
+  const [interviewBtn, setInterviewBtn] = useState(false);
 
   const style = {
     position: "fixed",
@@ -68,6 +70,7 @@ const CandidateDetails = () => {
     getSingleCandidatedetails();
     getOptionsList();
   }, []);
+
 
   const getSingleCandidatedetails = async () => {
     const encryptedData = Encrypt(
@@ -86,6 +89,7 @@ const CandidateDetails = () => {
 
         if (res?.data?.success) {
           setCandidate(mydata);
+
         } else {
           toast.error("error");
         }
@@ -112,6 +116,7 @@ const CandidateDetails = () => {
           setTechToolsOptions(mydata?.mst_employer_types);
           setQualificationsOptions(mydata?.mst_employer_types);
           setLanguagesOptions(mydata?.mst_employer_types);
+          setJobStatusOptions(mydata?.mst_candidate_job_statuses);
         }
       })
       .catch((err) => {
@@ -175,6 +180,39 @@ const CandidateDetails = () => {
     submitCvRequest();
   };
 
+  const handleInterview = (uuid) => {
+    setUUIDSelected(uuid);
+    getInterview(uuid);
+  };
+
+
+  const getInterview = async (uuid) => {
+    const encryptedData = Encrypt(JSON.stringify({
+      id: uuid,
+      empId: candidate?.is_cv_list_same_emp?.emp_uid
+    }));
+    await axiosInstanceAuth
+      .post("/v1/emp/interview/request", {
+        response: encryptedData,
+      })
+      .then((res) => {
+        const msg = Decrypt(res?.data?.message).replace(/"/g, " ");
+        const mydata = JSON.parse(Decrypt(res?.data?.data));
+
+        if (res?.data?.success) {
+          toast.success(msg)
+          setInterviewBtn(true)
+        } else {
+          toast.error(msg);
+        }
+      })
+      .catch((err) => {
+        console.log("err --->", err);
+      });
+
+
+  }
+
   const getJobNames = async () => {
     const encryptedData = Encrypt(JSON.stringify({}));
     await axiosInstanceAuth
@@ -195,6 +233,7 @@ const CandidateDetails = () => {
         console.log("err --->", err);
       });
   };
+
 
   const submitCvRequest = async () => {
     const encryptedData = Encrypt(
@@ -224,6 +263,10 @@ const CandidateDetails = () => {
       });
   };
 
+
+
+
+
   return (
     <>
       <NewHeader isLoggedIn={isLoggedIn} />
@@ -237,52 +280,87 @@ const CandidateDetails = () => {
               <img src={backButton} alt="" /> <span> Back </span>{" "}
             </button>
 
-            {/* ---- Shortlist ---- */}
-            <div className="d-flex justify-content-end align-items-center left-side-buttons">
-              <div className="title">Shortlist</div>
-              {
-                <div
-                  align="right"
-                  className="mx-2 button-box"
-                  onClick={(e) => handleShortlist(candidate?.uuid)}
-                >
-                  {candidate?.emp_short_list === null ? (
-                    <div className="active-status d-flex justify-content-center">
-                      Add
+            <div className="wrapper d-flex justify-content-end align-items-center">
+              <table border='0'>
+                <tr>
+                  <th className="text-end"><div className="title">Shortlist</div></th>
+                  <td className="px-2"> {/* ---- Shortlist ---- */}
+                    <div className=" mx-2 left-side-buttons">
+                      {
+                        <div
+                          align="right"
+                          className="button-box"
+                          onClick={(e) => handleShortlist(candidate?.uuid)}
+                        >
+                          {candidate?.emp_short_list === null ? (
+                            <div className="active-status d-flex justify-content-center">
+                              Add
+                            </div>
+                          ) : candidate?.emp_short_list ? (
+                            <div className="closed-status d-flex justify-content-center">
+                              Remove
+                            </div>
+                          ) : null}
+                        </div>
+                      }
+                    </div></td>
+                </tr>
+                <tr>
+                  <th className="text-end"><div className="title">Request CV</div></th>
+                  <td className="px-2">{/* ---- Request CV ---- */}
+                    <div className="left-side-buttons">
+                      {candidate?.is_cv_list_same_emp?.is_cv === 1 || candidate?.is_cv_list_same_emp?.is_cv === 2 || candidate?.is_cv_list_same_emp?.is_cv === 3 ? (
+                        <div align="right" className="mx-2 button-box">
+                          {candidate?.is_cv_list_same_emp?.is_cv == 2 ? (
+                            <div className="active-status">Accepted</div>
+                          ) : candidate?.is_cv_list_same_emp?.is_cv == 1 ? (
+                            <div className="requested-status">Requested</div>
+                          ) : candidate?.is_cv_list_same_emp?.is_cv == 3 ? (
+                            <div className="closed-status">Rejected</div>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <div
+                          align="right"
+                          className="mx-2 button-box"
+                          onClick={(e) => handleOpenPopUp(candidate?.uuid)}
+                        >
+                          <div className="request-status">Request</div>
+                        </div>
+                      )}
+                    </div></td>
+                </tr>
+                {candidate?.is_cv_list_same_emp == null || candidate?.is_cv_list_same_emp?.is_cv == 1 ? <tr></tr> : <tr>
+                  <th className="text-end"><div className="title">Request Interview </div></th>
+                  <td className="px-2">
+                    <div className="left-side-buttons">
+                      <div align="right" className="button-box">
+                        <div className="left-side-buttons">
+                          {candidate?.is_cv_list_same_emp?.interview_request === 1 || candidate?.is_cv_list_same_emp?.interview_request === 2 || candidate?.is_cv_list_same_emp?.interview_request === 3 ? (
+                            <div align="right" className="mx-2 button-box">
+                              {candidate?.is_cv_list_same_emp?.interview_request == 2 ? (
+                                <div className="active-status">Accepted</div>
+                              ) : candidate?.is_cv_list_same_emp?.interview_request == 1 ? (
+                                <div className="requested-status">Requested</div>
+                              ) : candidate?.is_cv_list_same_emp?.interview_request == 3 ? (
+                                <div className="closed-status">Rejected</div>
+                              ) : null}
+                            </div>
+                          ) : (
+                            <div
+                              align="right"
+                              className="button-box"
+                            >
+                              {interviewBtn ? <div className="requested-status">Requested</div> : <div className="request-status" onClick={() => handleInterview(candidate.uuid)}>Request</div>}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  ) : candidate?.emp_short_list ? (
-                    <div className="closed-status d-flex justify-content-center">
-                      Remove
-                    </div>
-                  ) : null}
-                </div>
-              }
+                  </td>
+                </tr>}
+              </table>
             </div>
-
-            {/* ---- Request CV ---- */}
-            <div className="d-flex justify-content-end align-items-center left-side-buttons">
-              <div className="title">Request CV</div>
-              {candidate?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
-                <div align="right" className="mx-2 button-box">
-                  {candidate?.is_cv_list_same_emp?.is_cv === 2 ? (
-                    <div className="active-status">Accepted</div>
-                  ) : candidate?.is_cv_list_same_emp?.is_cv === 1 ? (
-                    <div className="requested-status">Requested</div>
-                  ) : candidate?.is_cv_list_same_emp?.is_cv === 3 ? (
-                    <div className="closed-status">Rejected</div>
-                  ) : null}
-                </div>
-              ) : (
-                <div
-                  align="right"
-                  className="mx-2 button-box"
-                  onClick={(e) => handleOpenPopUp(candidate?.uuid)}
-                >
-                  <div className="request-status">Request</div>
-                </div>
-              )}
-            </div>
-
             <div className="row">
               <div className="col-lg-4 my-3">
                 <div className="candidate-bg">
@@ -344,8 +422,8 @@ const CandidateDetails = () => {
                           <div className="answer-bg">
                             {candidate?.desired_employer_type?.length > 0
                               ? candidate?.desired_employer_type.map(
-                                  (d) => `${d}, `
-                                )
+                                (d) => `${d}, `
+                              )
                               : null}
                           </div>
                         </div>
@@ -422,11 +500,11 @@ const CandidateDetails = () => {
                       <div className="col-lg-8">
                         <p className="answers">
                           {candidate.notice_period == 0 ||
-                          candidate.notice_period == 1
+                            candidate.notice_period == 1
                             ? `${candidate.notice_period} Week`
                             : candidate.notice_period == null
-                            ? ""
-                            : `${candidate.notice_period} Weeks`}
+                              ? ""
+                              : `${candidate.notice_period} Weeks`}
                         </p>
                       </div>
                     </div>
@@ -502,8 +580,8 @@ const CandidateDetails = () => {
                           <div className="answer-bg">
                             {candidate?.desired_working_arrangements?.length > 0
                               ? candidate?.desired_working_arrangements.map(
-                                  (d) => `${d}, `
-                                )
+                                (d) => `${d}, `
+                              )
                               : null}
                           </div>
                         </div>
@@ -663,8 +741,8 @@ const CandidateDetails = () => {
                             <div className="answer-bg">
                               {candidate?.legal_tech_tools?.length > 0
                                 ? candidate?.legal_tech_tools.map(
-                                    (d) => `${d}, `
-                                  )
+                                  (d) => `${d}, `
+                                )
                                 : null}
                             </div>
                           </div>
@@ -778,7 +856,7 @@ const CandidateDetails = () => {
                     {jobNames.length > 0 &&
                       jobNames.map((d, i) => {
                         return (
-                          <div className="radioBtn detail-content">
+                          <div className="radioBtn detail-content" key={i}>
                             <label class="form-check-label" for="radio1">
                               {d?.job_title}
                             </label>

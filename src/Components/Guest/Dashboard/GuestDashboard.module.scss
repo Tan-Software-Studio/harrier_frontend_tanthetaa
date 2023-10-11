@@ -123,6 +123,19 @@
 
             td {
                 text-align: left;
+
+                .edit_btn {
+                    border: 1px solid gray;
+                    border-radius: 5px;
+                    filter: contrast(0.2);
+                    transition: all 0.2s ease-in-out;
+
+                    &:hover {
+                        filter: contrast(1);
+                        border: 1px solid #000000;
+
+                    }
+                }
             }
 
             .MuiTableCell-head {

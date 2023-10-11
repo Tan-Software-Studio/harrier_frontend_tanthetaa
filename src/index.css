@@ -763,6 +763,12 @@ legend {
 
 @media screen and (max-width:575px) {
 
+  .MuiBox-root {
+    top:55% !important;
+    width: 80% !important;
+  }
+
+
   .commom-sky-button,
   .commom-blue-button {
     font-size: 16px;
@@ -798,6 +804,7 @@ legend {
 }
 
 @media screen and (max-width:480px) {
+
   .modal-modal-title h1 {
     font-size: 24px !important;
     line-height: 30px !important;
@@ -811,6 +818,7 @@ legend {
   .py-42 {
     padding: 30px 0;
   }
+
 }
 
 @media screen and (max-width:375px) {
