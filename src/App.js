@@ -26,6 +26,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Updatepassword from "./Components/Updatepassword/Updatepassword";
 import CorequestionsCopy from "./Components/Corequestions/Corequestions";
 import TermsOfUse from "./Components/documents/TermsOfUse";
+import UpdateGuest from "./Components/UpdateGuest/UpdateGuest";
+import UpdateGuestProfile from "./Components/UpdateGuest/UpdateGuestProfile";
 
 function App() {
   return (
@@ -56,6 +58,8 @@ function App() {
           />
 
           <Route path="/guest-dashboard" element={<GuestDashboard />} />
+          <Route path="/update-guest-profile/" element={<UpdateGuestProfile />} />
+          {/* <Route path="/update-candidate-profile/:uuid" element={<UpdateGuest />} /> */}
           <Route
             path="/guest-candidate-details/:uuid"
             element={<SingleCandidate />}

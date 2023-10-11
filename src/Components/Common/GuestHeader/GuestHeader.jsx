@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Headerlogo from "../../../img/Header/Header-logo.svg"
 import styles from "../NewHeader/NewHeader.module.scss"
+import profileImage from '../../../img/common/profile-pic.png'
 
 // ======= Import ======
 import logOutIcon from "../../../img/common/logout.png"
@@ -11,14 +12,22 @@ import Decrypt from '../../../customHook/customHook/EncryptDecrypt/Decrypt';
 import axiosInstanceAuth from '../../../apiServices/axiosInstanceAuth';
 import { toast } from 'react-toastify';
 import { Box, TextField, Typography } from '@mui/material';
+import dropdownArrow from "../../../img/common/dropdown-icon.png"
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import axiosInstance from '../../../apiServices/axiosInstance'
+import Encrypt from '../../../customHook/customHook/EncryptDecrypt/Encrypt'
 
 const GuestHeader = ({ isLoggedGuestIn }) => {
 
     const navigate = useNavigate();
-
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [details, setDetails] = useState({});
+    const [bellPop, setBellPop] = React.useState(null);
+    const openPop = Boolean(bellPop);
     const [openLogOut, setOpenLogOut] = useState(false);
 
-
+    const open = Boolean(anchorEl);
     const handleOpenLogOut = () => {
         setOpenLogOut(true);
     };
@@ -46,8 +55,13 @@ const GuestHeader = ({ isLoggedGuestIn }) => {
         { title: '12 Angry Men', year: 1957 },
     ]
 
-    const LogOut = async () => {
 
+
+    const profileUpdate = async () => {
+        navigate(`/update-guest-profile/`);
+        handleClose();
+    };
+    const LogOut = async () => {
         await axiosInstanceAuth
             .post("/v1/logout")
             .then((res) => {
@@ -66,6 +80,14 @@ const GuestHeader = ({ isLoggedGuestIn }) => {
             })
     }
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
 
     return (
 
@@ -76,9 +98,9 @@ const GuestHeader = ({ isLoggedGuestIn }) => {
                         <div className='d-flex justify-content-between align-items-center'>
                             <div className='d-flex align-items-center'>
                                 {isLoggedGuestIn === true ?
-                                    <Link to="/guest-dashboard"> <img src={Headerlogo} alt="" /></Link>
+                                    <Link to="/guest-dashboard"> <img src={Headerlogo} alt="image" /></Link>
                                     :
-                                    <Link to="/"> <img src={Headerlogo} alt="" /></Link>
+                                    <Link to="/"> <img src={Headerlogo} alt="image" /></Link>
                                 }
 
                                 {/* <Autocomplete
@@ -101,14 +123,45 @@ const GuestHeader = ({ isLoggedGuestIn }) => {
                             </div>
 
                             <div id="navbarCollapse" className="collapse navbar-collapse justify-content-end ">
-                                <button onClick={handleOpenLogOut} className="log-out-btn" >
+                                {/* <button onClick={handleOpenLogOut} className="log-out-btn" >
                                     <img src={logOutIcon} alt="" className='px-2 py-1' />
                                     Logout
+                                </button> */}
+                                <button
+                                    id="basic-button"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                    className="drop-down-btn"
+                                >
+                                    <div className='profile-login' >
+                                        <div className='d-flex align-items-center'>
+                                            <div className='profile-icon'>
+                                                <img src={profileImage} alt="" className='me-2 profile-pic' />
+                                            </div>
+                                            <img src={dropdownArrow} alt="" className='dropdown-arrow ' />
+                                        </div>
+                                    </div>
                                 </button>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => profileUpdate()}>My Profile </MenuItem>
+                                    <MenuItem onClick={handleOpenLogOut}>Logout</MenuItem>
+                                </Menu>
                             </div>
                         </div>
+                        <div>
+                            <p className='border-bottom p-2'></p>
+                        </div>
 
-                        <p className='border-bottom p-2'></p>
                     </div>
                 </nav>
             </div>

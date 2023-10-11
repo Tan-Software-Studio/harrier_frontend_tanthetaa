@@ -86,6 +86,7 @@ const Listofcandidates = () => {
   let selectValue =
     getSelectValue !== null ? getSelectValue.split(",").slice(0) : null;
 
+
   let getFilterValue = JSON.parse(localStorage.getItem("Filter"));
   // console.log("--------->>>> getFilterValue", getFilterValue);
 
@@ -141,6 +142,7 @@ const Listofcandidates = () => {
   const [candidatesListDetails, setCandidatesListDetails] = useState([]);
   const [oldCandidatesListDetails, setOldCandidatesListDetails] = useState([]);
   const [lastPage, setlastPage] = useState();
+  const [allPage, setAllPage] = useState();
   const [openPopUp, setOpenPopUp] = useState(false);
   const [openThankYouPopUp, setOpenThankYouPopUp] = useState(false);
 
@@ -156,8 +158,11 @@ const Listofcandidates = () => {
 
   const [checked, setChecked] = useState(false);
   const [selctedColumns, setSelctedColumns] = useState(selectValue || []);
-
+  const [search, setSearch] = useState(false)
+  const [searchKey, setSearchKey] = useState('')
   const [testSelctedColumns, setTestSelctedColumns] = useState([]);
+
+  let searchTimeout;
 
   // const [myFilterData, setMyFilterData] = useState([
   //     {
@@ -187,8 +192,6 @@ const Listofcandidates = () => {
     ]
   );
 
-  // console.log("--->>> myFilterData", myFilterData);
-
   const [storage, setStorage] = useState({
     is_show: "",
     first_option: "",
@@ -199,6 +202,7 @@ const Listofcandidates = () => {
     currency_code: "",
     sub_options: [],
   });
+
 
   const ColumnOptions = [
     { id: 1, title: "Job Title" },
@@ -217,6 +221,7 @@ const Listofcandidates = () => {
     { id: 10, title: "Desired Country" },
 
     { id: 11, title: "Current Region" },
+    { id: 12, title: "Desired Region" },
 
     // { id: 12, title: "Current Salary" },
     // { id: 13, title: "Current Bonus / Commission" },
@@ -250,6 +255,7 @@ const Listofcandidates = () => {
 
     // { id: 41, title: "Direct Reports" },
   ];
+
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -289,18 +295,69 @@ const Listofcandidates = () => {
       target: { value },
     } = event;
 
+
     localStorage.setItem(
       "Select",
       typeof value === "string" ? value.split(",") : value
     );
 
+
     setPersonFilter(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
+
+    //  add array as a table show wise 
+    const newOrderArray = [
+      "Job Title",
+      "Desired Region",
+      "Employer Type",
+      "Time in Current Role",
+      "Time in Industry",
+      "Status",
+      "Desired Employer Type",
+      "Line Management",
+      "Notice Period",
+      "Current Country",
+      "Desired Country",
+      "Current Region",
+      "Desired Salary",
+      "Desired Bonus / Commission",
+      "Current Freelancer",
+      "Open to Freelance",
+      "Day Rate",
+      "Current Working Arrangements",
+      "Desired Working Arrangements",
+      "Law Degree",
+      "Qualified Lawyer",
+      "Jurisdiction",
+      "Post-Qualified Experience",
+      "Legal Specialism",
+      "Area of Law",
+      "LegalTech Vendor/Consultancy",
+      "Customer Type",
+      "Deal Size",
+      "Sales quota",
+      "LegalTech Tools",
+      "Tech Tools",
+      "Qualifications",
+      "Languages"
+    ];
+
+    const resultArray = [...value];
+
+    resultArray.sort((a, b) => {
+      const aIndex = newOrderArray.indexOf(a);
+      const bIndex = newOrderArray.indexOf(b);
+
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+
+      return aIndex - bIndex;
+    });
+
     setSelctedColumns(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
+      typeof resultArray === "string" ? resultArray.split(",") : resultArray
     );
   };
 
@@ -313,6 +370,7 @@ const Listofcandidates = () => {
   };
 
   const handelClearFilter = (event) => {
+
     localStorage.removeItem("Filter");
     setMyFilterData([
       {
@@ -326,6 +384,18 @@ const Listofcandidates = () => {
         sub_options: [],
       },
     ]);
+    getDropDownListTest([
+      {
+        is_show: "",
+        first_option: "",
+        filter_type: "is",
+        second_option: "",
+        third_option: "",
+        currency: "",
+        currency_code: "",
+        sub_options: [],
+      },
+    ], 1)
   };
 
   function getStyles(name, personName, theme) {
@@ -353,7 +423,11 @@ const Listofcandidates = () => {
 
   const handlePageChange = (event, value) => {
     // getCandidatesList(value);
-    getDropDownListTest(myFilterData, value);
+    if (search == true) {
+      searchDetail(searchKey, value)
+    } else {
+      getDropDownListTest(myFilterData, value);
+    }
   };
 
   useEffect(() => {
@@ -384,6 +458,7 @@ const Listofcandidates = () => {
 
         if (res?.data?.success) {
           toast.success(msg);
+
           getDropDownListTest(myFilterData, 1);
           // getCandidatesList(1);
         } else {
@@ -534,6 +609,7 @@ const Listofcandidates = () => {
         const myData = JSON.parse(Decrypt(res?.data?.data));
 
         if (res?.data?.success) {
+          // console.log("quick::>>", myData);
           setQuickSearchOptions(myData);
         } else {
           // toast.error("error")
@@ -587,12 +663,14 @@ const Listofcandidates = () => {
       .then((res) => {
         const myData = JSON.parse(Decrypt(res?.data?.data));
         const candidatesList = myData?.data;
+
         // console.log("--->  VIEW", candidatesList);
 
         if (res?.data?.success) {
           setCandidatesListDetails(candidatesList);
           setOldCandidatesListDetails(candidatesList);
           setlastPage(myData?.last_page);
+          setAllPage(myData?.last_page);
         } else {
           toast.error("error");
         }
@@ -602,285 +680,340 @@ const Listofcandidates = () => {
       });
   };
 
-  const quickTypeSearch = (e) => {
-    if (e.target.value) {
-      const searchData = oldCandidatesListDetails.filter((i) => {
-        // console.log("------->>>>>> SEARCH TEXT", i);
-
-        let job_title = i?.job_title
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let employer_type_list = i?.employer_type_list?.title
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let time_in_current_role_diff = i?.time_in_current_role_diff
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let time_in_industry_diff = i?.time_in_industry_diff
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-
-        let current_salary = i?.current_salary
-          .toString()
-          .includes(e.target.value);
-        let current_bonus_or_commission = i?.current_bonus_or_commission
-          .toString()
-          .includes(e.target.value);
-        let desired_salary = i?.desired_salary
-          .toString()
-          .includes(e.target.value);
-        let desired_bonus_or_commission = i?.desired_bonus_or_commission
-          .toString()
-          .includes(e.target.value);
-
-        let deal_size = i?.deal_size.toString().includes(e.target.value);
-        let sales_quota = i?.sales_quota.toString().includes(e.target.value);
-        let deal_size_symbol_list = i?.deal_size_symbol_list?.currency_code
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let sales_quota_symbol_list = i?.sales_quota_symbol_list?.currency_code
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-
-        let current_salary_symbol_list =
-          i?.current_salary_symbol_list?.currency_code
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase());
-        let current_bonus_or_commission_symbol_list =
-          i?.current_bonus_or_commission_symbol_list?.currency_code
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase());
-        let desired_salary_symbol_list =
-          i?.desired_salary_symbol_list?.currency_code
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase());
-        let desired_bonus_or_commission_symbol_list =
-          i?.desired_bonus_or_commission_symbol_list?.currency_code
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase());
-
-        let jurisdiction = i?.jurisdiction
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let pqe = i?.pqe
-          ?.toString()
-          .toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let area_of_law = i?.area_of_law
-          ?.toLowerCase()
-          .includes(e.target.value.toLowerCase());
-        let notice_period = i?.notice_period
-          .toString()
-          ?.toLowerCase()
-          .includes(e.target.value?.toLowerCase());
-
-        let customer_type_list = i?.customer_type_list.map((d, i) =>
-          (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
+  const searchDetail = (searchKey, value) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      if (searchKey.length > 0) {
+        const encryptedData = Encrypt(
+          JSON.stringify({
+            search: searchKey,
+          })
         );
-        let legal_tech_tools_list = i?.legal_tech_tools.map((d, i) =>
-          d.toLowerCase().includes(e.target.value.toLowerCase())
-        );
-        let qualification_list = i?.qualification.map((d, i) =>
-          d.toLowerCase().includes(e.target.value.toLowerCase())
-        );
+        await axiosInstanceAuth
+          .post(
+            `/v1/emp/candidates/list?search=${encryptedData}&page=${value}`,
+            { response: encryptedData }
+          )
+          .then((res) => {
+            const myData = JSON.parse(Decrypt(res?.data?.data));
+            const searchCandidatesList = myData?.data;
+            // console.log("--->  VIEW", candidatesList);
 
-        let desired_working_arrangements_list =
-          i?.desired_working_arrangements_list.map((d, i) =>
-            (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
-          );
+            if (res?.data?.success) {
+              setSearch(true)
+              setCandidatesListDetails(searchCandidatesList);
+              setlastPage(myData?.last_page);
+            } else {
+              toast.error("error");
+            }
+          })
+          .catch((err) => {
+            console.log("err--->", err);
+          });
+      } else {
+        setSearch(false)
+        setSearchKey('')
+        getDropDownListTest(myFilterData, value)
+      }
+    }, 2000);
+  }
 
-        let languages_list = i?.languages_list.map((d, i) =>
-          (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
-        );
+  const quickTypeSearch = (e, value) => {
 
-        let line_management = i?.line_management
-          .toString()
-          ?.toLowerCase()
-          .includes(e.target.value?.toLowerCase());
+    searchDetail(e.target.value, value)
 
-        let desired_employer_types = i?.desired_employer_types.map((d, i) =>
-          (d?.desired_employer_types_view?.title)
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())
-        );
+    setSearchKey(e.target.value)
+    // if (search == false) {
+    //   if (e.target.value.length === 0) {
+    //     setSearch(false)
+    //     getDropDownListTest(myFilterData, value)
+    //   } else {
+    //     setSearchKey(e.target.value)
+    //     searchDetail(e.target.value, value)
+    //   }
+    // }
+    // else {
+    //   setSearchKey(e.target.value)
+    //   searchDetail(e.target.value, value)
+    // }
+    // if (e.target.value) {
+    //   const searchData = oldCandidatesListDetails.filter((i) => {
+    //     // console.log("------->>>>>> SEARCH TEXT", i);
 
-        let current_country_list = i?.current_country_list?.country_name
-          .toString()
-          ?.toLowerCase()
-          .includes(e.target.value?.toLowerCase());
+    //     let job_title = i?.job_title
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let employer_type_list = i?.employer_type_list?.title
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let time_in_current_role_diff = i?.time_in_current_role_diff
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let time_in_industry_diff = i?.time_in_industry_diff
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
 
-        let current_regions_list = i?.current_regions_list?.title
-          .toString()
-          ?.toLowerCase()
-          .includes(e.target.value?.toLowerCase());
+    //     let current_salary = i?.current_salary
+    //       .toString()
+    //       .includes(e.target.value);
+    //     let current_bonus_or_commission = i?.current_bonus_or_commission
+    //       .toString()
+    //       .includes(e.target.value);
+    //     let desired_salary = i?.desired_salary
+    //       .toString()
+    //       .includes(e.target.value);
+    //     let desired_bonus_or_commission = i?.desired_bonus_or_commission
+    //       .toString()
+    //       .includes(e.target.value);
 
-        let desired_country_list = i?.desired_country_list.map((d, i) =>
-          (d?.country_name).toLowerCase().includes(e.target.value.toLowerCase())
-        );
+    //     let deal_size = i?.deal_size.toString().includes(e.target.value);
+    //     let sales_quota = i?.sales_quota.toString().includes(e.target.value);
+    //     let deal_size_symbol_list = i?.deal_size_symbol_list?.currency_code
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let sales_quota_symbol_list = i?.sales_quota_symbol_list?.currency_code
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
 
-        let freelance_daily_rate_symbol_list =
-          i?.freelance_daily_rate_symbol_list?.currency_code
-            .toString()
-            ?.toLowerCase()
-            .includes(e.target.value?.toLowerCase());
+    //     let current_salary_symbol_list =
+    //       i?.current_salary_symbol_list?.currency_code
+    //         ?.toLowerCase()
+    //         .includes(e.target.value.toLowerCase());
+    //     let current_bonus_or_commission_symbol_list =
+    //       i?.current_bonus_or_commission_symbol_list?.currency_code
+    //         ?.toLowerCase()
+    //         .includes(e.target.value.toLowerCase());
+    //     let desired_salary_symbol_list =
+    //       i?.desired_salary_symbol_list?.currency_code
+    //         ?.toLowerCase()
+    //         .includes(e.target.value.toLowerCase());
+    //     let desired_bonus_or_commission_symbol_list =
+    //       i?.desired_bonus_or_commission_symbol_list?.currency_code
+    //         ?.toLowerCase()
+    //         .includes(e.target.value.toLowerCase());
 
-        let day_rate = i?.day_rate
-          .toString()
-          ?.toLowerCase()
-          .includes(e.target.value?.toLowerCase());
+    //     let jurisdiction = i?.jurisdiction
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let pqe = i?.pqe
+    //       ?.toString()
+    //       .toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let area_of_law = i?.area_of_law
+    //       ?.toLowerCase()
+    //       .includes(e.target.value.toLowerCase());
+    //     let notice_period = i?.notice_period
+    //       .toString()
+    //       ?.toLowerCase()
+    //       .includes(e.target.value?.toLowerCase());
 
-        let current_working_arrangements_list =
-          i?.current_working_arrangements_list?.title
-            .toString()
-            ?.toLowerCase()
-            .includes(e.target.value?.toLowerCase());
+    //     let customer_type_list = i?.customer_type_list.map((d, i) =>
+    //       (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
+    //     );
+    //     let legal_tech_tools_list = i?.legal_tech_tools.map((d, i) =>
+    //       d.toLowerCase().includes(e.target.value.toLowerCase())
+    //     );
+    //     let qualification_list = i?.qualification.map((d, i) =>
+    //       d.toLowerCase().includes(e.target.value.toLowerCase())
+    //     );
 
-        let legaltech_vendor_or_consultancy_list =
-          i?.legaltech_vendor_or_consultancy_list?.[0]?.title
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase());
+    //     let desired_working_arrangements_list =
+    //       i?.desired_working_arrangements_list.map((d, i) =>
+    //         (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
+    //       );
 
-        let tech_tools = i?.tech_tools.map((d, i) =>
-          d?.toLowerCase().includes(e.target.value.toLowerCase())
-        );
+    //     let languages_list = i?.languages_list.map((d, i) =>
+    //       (d?.title).toLowerCase().includes(e.target.value.toLowerCase())
+    //     );
 
-        let profile_about = i?.profile_about
-          ?.toLowerCase()
-          .includes(e.target.value?.toLowerCase());
+    //     let line_management = i?.line_management
+    //       .toString()
+    //       ?.toLowerCase()
+    //       .includes(e.target.value?.toLowerCase());
 
-        // console.log("------- desired_employer_types", desired_employer_types);
-        // console.log("------- desired_country_list", desired_country_list);
-        // console.log(
-        //   "------- desired_working_arrangements_list",
-        //   desired_working_arrangements_list
-        // );
-        // console.log("------- languages_list", languages_list);
-        // console.log("------- customer_type_list", customer_type_list);
-        // console.log("------- legal_tech_tools_list", legal_tech_tools_list);
-        // console.log("------- tech_tools", tech_tools);
-        console.log("------- qualification_list", qualification_list);
+    //     let desired_employer_types = i?.desired_employer_types.map((d, i) =>
+    //       (d?.desired_employer_types_view?.title)
+    //         .toLowerCase()
+    //         .includes(e.target.value.toLowerCase())
+    //     );
 
-        return (
-          job_title ||
-          employer_type_list ||
-          time_in_current_role_diff ||
-          time_in_industry_diff ||
-          line_management ||
-          desired_employer_types?.[0] ||
-          desired_employer_types?.[1] ||
-          desired_employer_types?.[2] ||
-          desired_employer_types?.[3] ||
-          desired_employer_types?.[4] ||
-          desired_employer_types?.[5] ||
-          desired_employer_types?.[6] ||
-          desired_employer_types?.[7] ||
-          desired_employer_types?.[8] ||
-          desired_employer_types?.[9] ||
-          current_country_list ||
-          current_regions_list ||
-          desired_country_list?.[0] ||
-          desired_country_list?.[1] ||
-          desired_country_list?.[2] ||
-          desired_country_list?.[3] ||
-          desired_country_list?.[4] ||
-          desired_country_list?.[5] ||
-          desired_country_list?.[6] ||
-          desired_country_list?.[7] ||
-          desired_country_list?.[8] ||
-          desired_country_list?.[9] ||
-          freelance_daily_rate_symbol_list ||
-          day_rate ||
-          desired_working_arrangements_list?.[0] ||
-          desired_working_arrangements_list?.[1] ||
-          desired_working_arrangements_list?.[2] ||
-          desired_working_arrangements_list?.[3] ||
-          desired_working_arrangements_list?.[4] ||
-          desired_working_arrangements_list?.[5] ||
-          desired_working_arrangements_list?.[6] ||
-          desired_working_arrangements_list?.[7] ||
-          desired_working_arrangements_list?.[8] ||
-          desired_working_arrangements_list?.[9] ||
-          languages_list?.[0] ||
-          languages_list?.[1] ||
-          languages_list?.[2] ||
-          languages_list?.[3] ||
-          languages_list?.[4] ||
-          languages_list?.[5] ||
-          languages_list?.[6] ||
-          languages_list?.[7] ||
-          languages_list?.[8] ||
-          languages_list?.[9] ||
-          current_working_arrangements_list ||
-          // desired_region_list ||
-          // status ||
-          // freelance_current ||
-          // freelance_future ||
-          current_salary ||
-          current_bonus_or_commission ||
-          desired_salary ||
-          desired_bonus_or_commission ||
-          deal_size ||
-          sales_quota ||
-          deal_size_symbol_list ||
-          sales_quota_symbol_list ||
-          current_salary_symbol_list ||
-          current_bonus_or_commission_symbol_list ||
-          desired_salary_symbol_list ||
-          desired_bonus_or_commission_symbol_list ||
-          // law_degree ||
-          // qualified_lawyer ||
-          jurisdiction ||
-          pqe ||
-          area_of_law ||
-          notice_period ||
-          legaltech_vendor_or_consultancy_list ||
-          customer_type_list?.[0] ||
-          customer_type_list?.[1] ||
-          customer_type_list?.[2] ||
-          customer_type_list?.[3] ||
-          customer_type_list?.[4] ||
-          customer_type_list?.[5] ||
-          customer_type_list?.[6] ||
-          customer_type_list?.[7] ||
-          customer_type_list?.[8] ||
-          customer_type_list?.[9] ||
-          legal_tech_tools_list?.[0] ||
-          legal_tech_tools_list?.[1] ||
-          legal_tech_tools_list?.[2] ||
-          legal_tech_tools_list?.[3] ||
-          legal_tech_tools_list?.[4] ||
-          legal_tech_tools_list?.[5] ||
-          legal_tech_tools_list?.[6] ||
-          legal_tech_tools_list?.[7] ||
-          legal_tech_tools_list?.[8] ||
-          legal_tech_tools_list?.[9] ||
-          tech_tools?.[0] ||
-          tech_tools?.[1] ||
-          tech_tools?.[2] ||
-          tech_tools?.[3] ||
-          tech_tools?.[4] ||
-          tech_tools?.[5] ||
-          tech_tools?.[6] ||
-          tech_tools?.[7] ||
-          tech_tools?.[8] ||
-          tech_tools?.[9] ||
-          qualification_list?.[0] ||
-          qualification_list?.[1] ||
-          qualification_list?.[2] ||
-          qualification_list?.[3] ||
-          qualification_list?.[4] ||
-          qualification_list?.[5] ||
-          qualification_list?.[6] ||
-          qualification_list?.[7] ||
-          qualification_list?.[8] ||
-          qualification_list?.[9] ||
-          profile_about
-        );
-      });
-      setCandidatesListDetails(searchData);
-    } else {
-      setCandidatesListDetails(oldCandidatesListDetails);
-    }
+    //     let current_country_list = i?.current_country_list?.country_name
+    //       .toString()
+    //       ?.toLowerCase()
+    //       .includes(e.target.value?.toLowerCase());
+
+    //     let current_regions_list = i?.current_regions_list?.title
+    //       .toString()
+    //       ?.toLowerCase()
+    //       .includes(e.target.value?.toLowerCase());
+
+    //     let desired_country_list = i?.desired_country_list.map((d, i) =>
+    //       (d?.country_name).toLowerCase().includes(e.target.value.toLowerCase())
+    //     );
+
+    //     let freelance_daily_rate_symbol_list =
+    //       i?.freelance_daily_rate_symbol_list?.currency_code
+    //         .toString()
+    //         ?.toLowerCase()
+    //         .includes(e.target.value?.toLowerCase());
+
+    //     let day_rate = i?.day_rate
+    //       .toString()
+    //       ?.toLowerCase()
+    //       .includes(e.target.value?.toLowerCase());
+
+    //     let current_working_arrangements_list =
+    //       i?.current_working_arrangements_list?.title
+    //         .toString()
+    //         ?.toLowerCase()
+    //         .includes(e.target.value?.toLowerCase());
+
+    //     let legaltech_vendor_or_consultancy_list =
+    //       i?.legaltech_vendor_or_consultancy_list?.[0]?.title
+    //         ?.toLowerCase()
+    //         .includes(e.target.value.toLowerCase());
+
+    //     let tech_tools = i?.tech_tools.map((d, i) =>
+    //       d?.toLowerCase().includes(e.target.value.toLowerCase())
+    //     );
+
+    //     let profile_about = i?.profile_about
+    //       ?.toLowerCase()
+    //       .includes(e.target.value?.toLowerCase());
+
+    //     // console.log("------- desired_employer_types", desired_employer_types);
+    //     // console.log("------- desired_country_list", desired_country_list);
+    //     // console.log(
+    //     //   "------- desired_working_arrangements_list",
+    //     //   desired_working_arrangements_list
+    //     // );
+    //     // console.log("------- languages_list", languages_list);
+    //     // console.log("------- customer_type_list", customer_type_list);
+    //     // console.log("------- legal_tech_tools_list", legal_tech_tools_list);
+    //     // console.log("------- tech_tools", tech_tools);
+    //     // console.log("------- qualification_list", qualification_list);
+
+    //     return (
+    //       job_title ||
+    //       employer_type_list ||
+    //       time_in_current_role_diff ||
+    //       time_in_industry_diff ||
+    //       line_management ||
+    //       desired_employer_types?.[0] ||
+    //       desired_employer_types?.[1] ||
+    //       desired_employer_types?.[2] ||
+    //       desired_employer_types?.[3] ||
+    //       desired_employer_types?.[4] ||
+    //       desired_employer_types?.[5] ||
+    //       desired_employer_types?.[6] ||
+    //       desired_employer_types?.[7] ||
+    //       desired_employer_types?.[8] ||
+    //       desired_employer_types?.[9] ||
+    //       current_country_list ||
+    //       current_regions_list ||
+    //       desired_country_list?.[0] ||
+    //       desired_country_list?.[1] ||
+    //       desired_country_list?.[2] ||
+    //       desired_country_list?.[3] ||
+    //       desired_country_list?.[4] ||
+    //       desired_country_list?.[5] ||
+    //       desired_country_list?.[6] ||
+    //       desired_country_list?.[7] ||
+    //       desired_country_list?.[8] ||
+    //       desired_country_list?.[9] ||
+    //       freelance_daily_rate_symbol_list ||
+    //       day_rate ||
+    //       desired_working_arrangements_list?.[0] ||
+    //       desired_working_arrangements_list?.[1] ||
+    //       desired_working_arrangements_list?.[2] ||
+    //       desired_working_arrangements_list?.[3] ||
+    //       desired_working_arrangements_list?.[4] ||
+    //       desired_working_arrangements_list?.[5] ||
+    //       desired_working_arrangements_list?.[6] ||
+    //       desired_working_arrangements_list?.[7] ||
+    //       desired_working_arrangements_list?.[8] ||
+    //       desired_working_arrangements_list?.[9] ||
+    //       languages_list?.[0] ||
+    //       languages_list?.[1] ||
+    //       languages_list?.[2] ||
+    //       languages_list?.[3] ||
+    //       languages_list?.[4] ||
+    //       languages_list?.[5] ||
+    //       languages_list?.[6] ||
+    //       languages_list?.[7] ||
+    //       languages_list?.[8] ||
+    //       languages_list?.[9] ||
+    //       current_working_arrangements_list ||
+    //       // desired_region_list ||
+    //       // status ||
+    //       // freelance_current ||
+    //       // freelance_future ||
+    //       current_salary ||
+    //       current_bonus_or_commission ||
+    //       desired_salary ||
+    //       desired_bonus_or_commission ||
+    //       deal_size ||
+    //       sales_quota ||
+    //       deal_size_symbol_list ||
+    //       sales_quota_symbol_list ||
+    //       current_salary_symbol_list ||
+    //       current_bonus_or_commission_symbol_list ||
+    //       desired_salary_symbol_list ||
+    //       desired_bonus_or_commission_symbol_list ||
+    //       // law_degree ||
+    //       // qualified_lawyer ||
+    //       jurisdiction ||
+    //       pqe ||
+    //       area_of_law ||
+    //       notice_period ||
+    //       legaltech_vendor_or_consultancy_list ||
+    //       customer_type_list?.[0] ||
+    //       customer_type_list?.[1] ||
+    //       customer_type_list?.[2] ||
+    //       customer_type_list?.[3] ||
+    //       customer_type_list?.[4] ||
+    //       customer_type_list?.[5] ||
+    //       customer_type_list?.[6] ||
+    //       customer_type_list?.[7] ||
+    //       customer_type_list?.[8] ||
+    //       customer_type_list?.[9] ||
+    //       legal_tech_tools_list?.[0] ||
+    //       legal_tech_tools_list?.[1] ||
+    //       legal_tech_tools_list?.[2] ||
+    //       legal_tech_tools_list?.[3] ||
+    //       legal_tech_tools_list?.[4] ||
+    //       legal_tech_tools_list?.[5] ||
+    //       legal_tech_tools_list?.[6] ||
+    //       legal_tech_tools_list?.[7] ||
+    //       legal_tech_tools_list?.[8] ||
+    //       legal_tech_tools_list?.[9] ||
+    //       tech_tools?.[0] ||
+    //       tech_tools?.[1] ||
+    //       tech_tools?.[2] ||
+    //       tech_tools?.[3] ||
+    //       tech_tools?.[4] ||
+    //       tech_tools?.[5] ||
+    //       tech_tools?.[6] ||
+    //       tech_tools?.[7] ||
+    //       tech_tools?.[8] ||
+    //       tech_tools?.[9] ||
+    //       qualification_list?.[0] ||
+    //       qualification_list?.[1] ||
+    //       qualification_list?.[2] ||
+    //       qualification_list?.[3] ||
+    //       qualification_list?.[4] ||
+    //       qualification_list?.[5] ||
+    //       qualification_list?.[6] ||
+    //       qualification_list?.[7] ||
+    //       qualification_list?.[8] ||
+    //       qualification_list?.[9] ||
+    //       profile_about
+    //     );
+    //   });
+    //   setCandidatesListDetails(searchData);
+    // } else {
+    //   setCandidatesListDetails(oldCandidatesListDetails);
+    // }
   };
 
   return (
@@ -948,11 +1081,10 @@ const Listofcandidates = () => {
                     </div>
 
                     <div
-                      className={`${
-                        i?.filter_type === "is_between"
-                          ? "second-input-multi"
-                          : "second-input"
-                      } second-input-multi-limit`}
+                      className={`${i?.filter_type === "is_between"
+                        ? "second-input-multi"
+                        : "second-input"
+                        } second-input-multi-limit`}
                     >
                       <div className="filter-select select-down-icon">
                         <div className="w-100">
@@ -1005,17 +1137,16 @@ const Listofcandidates = () => {
                     </div>
 
                     <div
-                      className={`${
-                        i?.filter_type === "is_between"
-                          ? "first-input-multi"
-                          : i?.first_option === "desired_salary" ||
-                            i?.first_option === "desired_bonus_or_commission" ||
-                            i?.first_option === "freelance_daily_rate" ||
-                            i?.first_option === "deal_size" ||
-                            i?.first_option === "sales_quota"
+                      className={`${i?.filter_type === "is_between"
+                        ? "first-input-multi"
+                        : i?.first_option === "desired_salary" ||
+                          i?.first_option === "desired_bonus_or_commission" ||
+                          i?.first_option === "freelance_daily_rate" ||
+                          i?.first_option === "deal_size" ||
+                          i?.first_option === "sales_quota"
                           ? "first-input"
                           : "first-input-multi-limit"
-                      }`}
+                        }`}
                     >
                       <div className="select-down-icon filter-select">
                         <div className="w-100">
@@ -1037,101 +1168,107 @@ const Listofcandidates = () => {
                             >
                               {i?.first_option === "time_in_industry"
                                 ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
+                                  <MenuItem value={d?.value}>
+                                    {d?.title}
+                                  </MenuItem>
+                                ))
                                 : i?.first_option === "time_in_current_role"
-                                ? filterType2Options.map((d) => (
+                                  ? filterType2Options.map((d) => (
                                     <MenuItem value={d?.value}>
                                       {d?.title}
                                     </MenuItem>
                                   ))
-                                : i?.first_option === "time_in_current_role"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "line_management"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "notice_period"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "freelance_current"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "freelance_future"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "status"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option ===
-                                  "legaltech_vendor_or_consultancy"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "desired_salary"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option ===
-                                  "desired_bonus_or_commission"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "freelance_daily_rate"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "pqe"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "deal_size"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "sales_quota"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : filterType3Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))}
+                                  : i?.first_option === "time_in_current_role"
+                                    ? filterType2Options.map((d) => (
+                                      <MenuItem value={d?.value}>
+                                        {d?.title}
+                                      </MenuItem>
+                                    ))
+                                    : i?.first_option === "line_management"
+                                      ? filterType2Options.map((d) => (
+                                        <MenuItem value={d?.value}>
+                                          {d?.title}
+                                        </MenuItem>
+                                      ))
+                                      : i?.first_option === "notice_period"
+                                        ? filterType2Options.map((d) => (
+                                          <MenuItem value={d?.value}>
+                                            {d?.title}
+                                          </MenuItem>
+                                        ))
+                                        : i?.first_option === "freelance_current"
+                                          ? filterType2Options.map((d) => (
+                                            <MenuItem value={d?.value}>
+                                              {d?.title}
+                                            </MenuItem>
+                                          ))
+                                          : i?.first_option === "freelance_future"
+                                            ? filterType2Options.map((d) => (
+                                              <MenuItem value={d?.value}>
+                                                {d?.title}
+                                              </MenuItem>
+                                            ))
+                                            : i?.first_option === "status"
+                                              ? filterType2Options.map((d) => (
+                                                <MenuItem value={d?.value}>
+                                                  {d?.title}
+                                                </MenuItem>
+                                              ))
+                                              : i?.first_option ===
+                                                "legaltech_vendor_or_consultancy"
+                                                ? filterType2Options.map((d) => (
+                                                  <MenuItem value={d?.value}>
+                                                    {d?.title}
+                                                  </MenuItem>
+                                                ))
+                                                : i?.first_option === "desired_salary"
+                                                  ? filterTypeRangeOptions.map((d) => (
+                                                    <MenuItem value={d?.value}>
+                                                      {d?.title}
+                                                    </MenuItem>
+                                                  ))
+                                                  : i?.first_option ===
+                                                    "desired_bonus_or_commission"
+                                                    ? filterTypeRangeOptions.map((d) => (
+                                                      <MenuItem value={d?.value}>
+                                                        {d?.title}
+                                                      </MenuItem>
+                                                    ))
+                                                    : i?.first_option === "freelance_daily_rate"
+                                                      ? filterTypeRangeOptions.map((d) => (
+                                                        <MenuItem value={d?.value}>
+                                                          {d?.title}
+                                                        </MenuItem>
+                                                      ))
+                                                      : i?.first_option === "pqe"
+                                                        ? filterTypeRangeOptions.map((d) => (
+                                                          <MenuItem value={d?.value}>
+                                                            {d?.title}
+                                                          </MenuItem>
+                                                        ))
+                                                        : i?.first_option === "deal_size"
+                                                          ? filterTypeRangeOptions.map((d) => (
+                                                            <MenuItem value={d?.value}>
+                                                              {d?.title}
+                                                            </MenuItem>
+                                                          ))
+                                                          : i?.first_option === "sales_quota"
+                                                            ? filterTypeRangeOptions.map((d) => (
+                                                              <MenuItem value={d?.value}>
+                                                                {d?.title}
+                                                              </MenuItem>
+                                                            ))
+                                                            : i?.first_option === "languages"
+                                                              ? filterType2Options.map((d) => (
+                                                                <MenuItem value={d?.value}>
+                                                                  {d?.title}
+                                                                </MenuItem>
+                                                              ))
+                                                              : filterType3Options.map((d) => (
+                                                                <MenuItem value={d?.value}>
+                                                                  {d?.title}
+                                                                </MenuItem>
+                                                              ))}
                             </Select>
                           </FormControl>
                         </div>
@@ -1139,18 +1276,17 @@ const Listofcandidates = () => {
                     </div>
 
                     {i?.first_option === "desired_salary" ||
-                    i?.first_option === "desired_bonus_or_commission" ||
-                    i?.first_option === "freelance_daily_rate" ||
-                    i?.first_option === "deal_size" ||
-                    i?.first_option === "sales_quota" ? (
+                      i?.first_option === "desired_bonus_or_commission" ||
+                      i?.first_option === "freelance_daily_rate" ||
+                      i?.first_option === "deal_size" ||
+                      i?.first_option === "sales_quota" ? (
                       <div
-                        className={`${
-                          i?.filter_type === "is_between" ||
+                        className={`${i?.filter_type === "is_between" ||
                           i?.filter_type === "is_more_than" ||
                           i?.filter_type === "is_less_than"
-                            ? "currency-input"
-                            : "currency-input-multi"
-                        }`}
+                          ? "currency-input"
+                          : "currency-input-multi"
+                          }`}
                       >
                         <div className="select-down-icon filter-select">
                           <div className="w-100">
@@ -1186,11 +1322,10 @@ const Listofcandidates = () => {
                     ) : null}
 
                     <div
-                      className={`${
-                        i?.filter_type === "is_between"
-                          ? "third-input-multi"
-                          : "third-input"
-                      } third-input-multi-limit`}
+                      className={`${i?.filter_type === "is_between"
+                        ? "third-input-multi"
+                        : "third-input"
+                        } third-input-multi-limit`}
                     >
                       <div className="filter-select select-down-icon">
                         <div className="w-100">
@@ -1272,13 +1407,13 @@ const Listofcandidates = () => {
                                   {...params}
                                   placeholder={
                                     i?.first_option === "desired_salary" ||
-                                    i?.first_option ===
+                                      i?.first_option ===
                                       "desired_bonus_or_commission" ||
-                                    i?.first_option ===
+                                      i?.first_option ===
                                       "freelance_daily_rate" ||
-                                    i?.first_option === "deal_size" ||
-                                    i?.first_option === "sales_quota" ||
-                                    i?.first_option === "pqe"
+                                      i?.first_option === "deal_size" ||
+                                      i?.first_option === "sales_quota" ||
+                                      i?.first_option === "pqe"
                                       ? "Please enter number"
                                       : ""
                                   }
@@ -1295,11 +1430,10 @@ const Listofcandidates = () => {
 
                     {i?.filter_type === "is_between" ? (
                       <div
-                        className={`${
-                          i?.filter_type === "is_between"
-                            ? "third-input-multi"
-                            : "third-input"
-                        }`}
+                        className={`${i?.filter_type === "is_between"
+                          ? "third-input-multi"
+                          : "third-input"
+                          }`}
                       >
                         <div className="filter-select select-down-icon">
                           <div className="w-100">
@@ -1612,15 +1746,15 @@ const Listofcandidates = () => {
                             #{d?.id}
                           </TableCell>
 
-                          {d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
+                          {d?.is_cv_list_same_emp?.is_cv == 1 || d?.is_cv_list_same_emp?.is_cv == 2 || d?.is_cv_list_same_emp?.is_cv == 3 ? (
                             <TableCell align="right">
-                              {d?.is_cv_list_same_emp?.is_cv === 2 ? (
+                              {d?.is_cv_list_same_emp?.is_cv == 2 ? (
                                 <div className="active-status">Accepted</div>
-                              ) : d?.is_cv_list_same_emp?.is_cv === 1 ? (
+                              ) : d?.is_cv_list_same_emp?.is_cv == 1 ? (
                                 <div className="requested-status">
                                   Requested
                                 </div>
-                              ) : d?.is_cv_list_same_emp?.is_cv === 3 ? (
+                              ) : d?.is_cv_list_same_emp?.is_cv == 3 ? (
                                 <div className="closed-status">Rejected</div>
                               ) : null}
                             </TableCell>
@@ -1650,6 +1784,28 @@ const Listofcandidates = () => {
                             </TableCell>
                           }
 
+                          {/* {selctedColumns.map((columnTitle) => {
+                            const dataField = columnMapping[columnTitle];
+
+                            // Check if the selected column exists in the mapping
+                            if (dataField) {
+                              return (
+                                <TableCell
+                                  key={columnTitle} // Use a unique key for each cell
+                                  component="th"
+                                  scope="row"
+                                  onClick={(e) => handleEdit(d.uuid)}
+                                >
+                                  {d[dataField]}
+                                </TableCell>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })} */}
+
+
+
                           {selctedColumns.includes("Job Title") ? (
                             <TableCell
                               component="th"
@@ -1657,6 +1813,16 @@ const Listofcandidates = () => {
                               onClick={(e) => handleEdit(d.uuid)}
                             >
                               {d?.job_title}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Desired Region") ? (
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              onClick={(e) => handleEdit(d.uuid)}
+                            >
+                              {d?.desired_region}
                             </TableCell>
                           ) : null}
 
@@ -1747,8 +1913,8 @@ const Listofcandidates = () => {
                               {d.notice_period == 0 || d.notice_period == 1
                                 ? `${d.notice_period} Week`
                                 : d.notice_period == null
-                                ? ""
-                                : `${d.notice_period} Weeks`}
+                                  ? ""
+                                  : `${d.notice_period} Weeks`}
                             </TableCell>
                           ) : null}
 
@@ -2147,8 +2313,8 @@ const Listofcandidates = () => {
                             {d.notice_period == 0 || d.notice_period == 1
                               ? `${d.notice_period} Week`
                               : d.notice_period == null
-                              ? ""
-                              : `${d.notice_period} Weeks`}
+                                ? ""
+                                : `${d.notice_period} Weeks`}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -2223,8 +2389,8 @@ const Listofcandidates = () => {
                             {d.notice_period == 0 || d.notice_period == 1
                               ? `${d.notice_period} Week`
                               : d.notice_period == null
-                              ? ""
-                              : `${d.notice_period} Weeks`}
+                                ? ""
+                                : `${d.notice_period} Weeks`}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -2272,7 +2438,7 @@ const Listofcandidates = () => {
                           >
                             #{d?.id}
                           </TableCell>
-                          {d?.is_cv_list_same_emp?.is_cv === (1 || 2 || 3) ? (
+                          {d?.is_cv_list_same_emp?.is_cv === 1 || d?.is_cv_list_same_emp?.is_cv == 2 || d?.is_cv_list_same_emp?.is_cv == 3 ? (
                             <TableCell align="right">
                               {d?.is_cv_list_same_emp?.is_cv === 2 ? (
                                 <div className="active-status">Accepted</div>

@@ -1,0 +1,267 @@
+.candidates-details-container {
+    :global {
+
+
+        .MuiAutocomplete-tag {
+            display: flex !important;
+            -webkit-box-align: center !important;
+            align-items: center !important;
+            height: auto !important;
+            padding: 0.25rem !important;
+            background-color: #191919 !important;
+            color: #ffffff !important;
+        }
+
+        .MuiSvgIcon-root {
+            margin-right: 0 !important;
+        }
+
+        .MuiChip-deleteIcon {
+            color: #ffffff !important;
+        }
+
+        .core-que-container {
+            margin: 20px;
+            box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 30px;
+
+            .form-control:disabled {
+                background-color: transparent;
+            }
+
+            .heading {
+                padding: 15px 30px;
+            }
+
+            .detail-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px !important;
+
+                .title {
+                    width: 300px;
+                    font-size: 15px;
+                    color: #A4A4A4;
+                }
+
+                .text-input-field {
+                    min-height: 35px;
+                    box-shadow: none;
+                    width: 100%;
+                    outline: none !important;
+
+                    &:focus,
+                    &:active {
+                        border-color: rgba(0, 0, 0, 0.23) !important;
+                        outline: none !important;
+                    }
+
+                    fieldset {
+                        border-color: rgba(0, 0, 0, 0.23);
+
+                        &:focus-visible {
+                            border: 1px solid black;
+                        }
+                    }
+                }
+
+                .time-input {
+                    input {
+                        height: 42px !important;
+                        border-color: black !important;
+                    }
+                }
+            }
+
+            .detail-content-symbol {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px !important;
+
+                .title {
+                    width: 300px;
+                    font-size: 15px;
+                    color: #A4A4A4;
+                }
+
+                .input-field-wrapper {
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: start;
+                    width: 100%;
+
+                    .text-input-field {
+                        min-height: 45px;
+                        box-shadow: none;
+                        outline: none !important;
+                        margin-right: 5px;
+
+                        &:focus,
+                        &:active {
+                            border-color: rgba(0, 0, 0, 0.23) !important;
+                            outline: none !important;
+                        }
+
+                        fieldset {
+                            border-color: rgba(0, 0, 0, 0.23);
+
+                            &:focus-visible {
+                                border: 1px solid black;
+                            }
+                        }
+                    }
+
+                    .symbol-input-field {
+                        flex: 1;
+                        max-height: 35px;
+                        margin-top: 2px;
+                    }
+                }
+            }
+
+            .heading {
+                padding: 15px 30px;
+                font-size: 20px;
+                font-weight: bold;
+                color: #233966;
+                border-bottom: 2px solid #DEDEDE;
+            }
+
+
+        }
+
+        .role-que-container {
+            flex: 2;
+            margin: 20px;
+            box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 30px;
+
+            .form-control:disabled {
+                background-color: transparent;
+            }
+
+
+
+            .detail-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+
+                .title {
+                    width: 300px;
+                    font-size: 15px;
+                    color: #A4A4A4;
+                }
+
+                .text-input-field {
+                    min-height: 45px;
+                    margin-right: 5px;
+                    box-shadow: none;
+                    width: 100%;
+                    outline: none !important;
+
+                    &:focus,
+                    &:active {
+                        border-color: rgba(0, 0, 0, 0.23) !important;
+                        outline: none !important;
+                    }
+
+                    fieldset {
+                        border-color: rgba(0, 0, 0, 0.23);
+
+                        &:focus-visible {
+                            border: 1px solid black;
+                        }
+                    }
+                }
+
+                .text-input-area {
+                    resize: none;
+
+                    &:focus,
+                    &:active {
+                        border-color: rgba(0, 0, 0, 0.23) !important;
+                        outline: none !important;
+                    }
+
+                }
+            }
+
+            .detail-content-symbol {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+
+                .title {
+                    width: 300px;
+                    font-size: 15px;
+                    color: #A4A4A4;
+                }
+
+                .checkbox-input {
+                    display: flex;
+                    justify-content: start;
+                    flex: 3;
+                }
+
+                .input-field-wrapper {
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+
+                    .text-input-field {
+                        min-height: 45px;
+                        box-shadow: none;
+                        outline: none !important;
+                        margin-right: 5px;
+
+                        &:focus,
+                        &:active {
+                            border-color: rgba(0, 0, 0, 0.23) !important;
+                            outline: none !important;
+                        }
+
+                        fieldset {
+                            border-color: rgba(0, 0, 0, 0.23);
+
+                            &:focus-visible {
+                                border: 1px solid black;
+                            }
+                        }
+                    }
+
+                    .symbol-input-field {
+                        flex: 1;
+                    }
+                }
+            }
+
+            .heading {
+                padding: 15px 30px;
+                font-size: 20px;
+                font-weight: bold;
+                color: #233966;
+                border-bottom: 2px solid #DEDEDE;
+            }
+
+            .sub-heading {
+                font-weight: bold;
+                font-size: 17px;
+                margin-top: 20px;
+                padding: 5px 30px;
+                color: #5A9BD5;
+                background: rgba(215, 231, 245, 0.5);
+            }
+        }
+    }
+}
+
+
+.override-input-field {
+    margin-left: 10px;
+    max-height: 45px !important;
+}

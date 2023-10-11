@@ -9,6 +9,7 @@ import Trash from "../../../img/common/trash.png";
 import searchIcon from "../../../img/common/search001.png";
 import removeInput from "../../../img/create-job/remove-input.png";
 import addInput from "../../../img/create-job/add-input.png";
+import eyes from "../../../img/create-job/eye.png";
 
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -122,7 +123,7 @@ const GuestDashboard = () => {
 
   const [selectedOption, setSelectedOption] = useState("Overview");
 
-  const sendQuickSearchTitle = (e) => {};
+  const sendQuickSearchTitle = (e) => { };
 
   const [filterRow, setFilterRow] = useState(2);
   const [isActiveFilterRow, setisActiveFilterRow] = useState(false);
@@ -291,11 +292,59 @@ const GuestDashboard = () => {
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
+    const newOrderArray = [
+      "Job Title",
+      "Desired Region",
+      "Employer Type",
+      "Time in Current Role",
+      "Time in Industry",
+      "Desired Employer Type",
+      "Line Management",
+      "Notice Period",
+      "Current Country",
+      "Desired Country",
+      "Current Region",
+      'Current Salary',
+      'Current Bonus / Commission',
+      "Desired Salary",
+      "Desired Bonus / Commission",
+      "Current Freelancer",
+      "Open to Freelance",
+      "Day Rate",
+      "Current Working Arrangements",
+      "Desired Working Arrangements",
+      "Law Degree",
+      "Qualified Lawyer",
+      "Jurisdiction",
+      "Post-Qualified Experience",
+      "Legal Specialism",
+      "Area of Law",
+      "LegalTech Vendor/Consultancy",
+      "Customer Type",
+      "Deal Size",
+      "Sales quota",
+      "LegalTech Tools",
+      "Tech Tools",
+      "Qualifications",
+      "Languages"
+    ];
+
+    const resultArray = [...value];
+
+    resultArray.sort((a, b) => {
+      const aIndex = newOrderArray.indexOf(a);
+      const bIndex = newOrderArray.indexOf(b);
+
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+
+      return aIndex - bIndex;
+    });
 
     setSelctedColumns(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
+      typeof resultArray === "string" ? resultArray.split(",") : resultArray
     );
+
   };
 
   const handelClearColumns = (event) => {
@@ -320,6 +369,18 @@ const GuestDashboard = () => {
         sub_options: [],
       },
     ]);
+    getDropDownListTest([
+      {
+        is_show: "",
+        first_option: "",
+        filter_type: "is",
+        second_option: "",
+        third_option: "",
+        currency: "",
+        currency_code: "",
+        sub_options: [],
+      },
+    ], 1)
   };
 
   function getStyles(name, personName, theme) {
@@ -387,6 +448,7 @@ const GuestDashboard = () => {
     { id: 31, title: "Tech Tools" },
     { id: 32, title: "Qualifications" },
     { id: 33, title: "Languages" },
+    { id: 34, title: "Desired Region" },
 
     // { id: 41, title: "Direct Reports" },
   ];
@@ -432,6 +494,11 @@ const GuestDashboard = () => {
   const handleEdit = (uuid) => {
     navigate(`/guest-candidate-details/${uuid}`);
   };
+
+  // --- remove this ----
+  const handleUpdateDetail = (uuid) => {
+    navigate(`/update-candidate-profile/${uuid}`);
+  }
 
   const getCandidatesList = async (page) => {
     const encryptedData = Encrypt(JSON.stringify({}));
@@ -798,11 +865,10 @@ const GuestDashboard = () => {
                     </div>
 
                     <div
-                      className={`${
-                        i?.filter_type === "is_between"
-                          ? "second-input-multi"
-                          : "second-input"
-                      } second-input-multi-limit`}
+                      className={`${i?.filter_type === "is_between"
+                        ? "second-input-multi"
+                        : "second-input"
+                        } second-input-multi-limit`}
                     >
                       <div className="filter-select select-down-icon">
                         <div className="w-100">
@@ -855,17 +921,16 @@ const GuestDashboard = () => {
                     </div>
 
                     <div
-                      className={`${
-                        i?.filter_type === "is_between"
-                          ? "first-input-multi"
-                          : i?.first_option === "desired_salary" ||
-                            i?.first_option === "desired_bonus_or_commission" ||
-                            i?.first_option === "freelance_daily_rate" ||
-                            i?.first_option === "deal_size" ||
-                            i?.first_option === "sales_quota"
+                      className={`${i?.filter_type === "is_between"
+                        ? "first-input-multi"
+                        : i?.first_option === "desired_salary" ||
+                          i?.first_option === "desired_bonus_or_commission" ||
+                          i?.first_option === "freelance_daily_rate" ||
+                          i?.first_option === "deal_size" ||
+                          i?.first_option === "sales_quota"
                           ? "first-input"
                           : "first-input-multi-limit"
-                      }`}
+                        }`}
                     >
                       <div className="select-down-icon filter-select">
                         <div className="w-100">
@@ -889,108 +954,108 @@ const GuestDashboard = () => {
                                                             <MenuItem value="is_not">IS NOT</MenuItem>
                                                             <MenuItem value="contains">CONTAINS</MenuItem> */}
 
-                              {console.log(
+                              {/* {console.log(
                                 "-------->>> i?.first_option",
                                 i?.first_option
-                              )}
+                              )} */}
 
                               {i?.first_option === "time_in_industry"
                                 ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
+                                  <MenuItem value={d?.value}>
+                                    {d?.title}
+                                  </MenuItem>
+                                ))
                                 : i?.first_option === "time_in_current_role"
-                                ? filterType2Options.map((d) => (
+                                  ? filterType2Options.map((d) => (
                                     <MenuItem value={d?.value}>
                                       {d?.title}
                                     </MenuItem>
                                   ))
-                                : i?.first_option === "time_in_current_role"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "line_management"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "notice_period"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "freelance_current"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "freelance_future"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "status"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option ===
-                                  "legaltech_vendor_or_consultancy"
-                                ? filterType2Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "desired_salary"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option ===
-                                  "desired_bonus_or_commission"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "freelance_daily_rate"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "pqe"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "deal_size"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : i?.first_option === "sales_quota"
-                                ? filterTypeRangeOptions.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))
-                                : filterType3Options.map((d) => (
-                                    <MenuItem value={d?.value}>
-                                      {d?.title}
-                                    </MenuItem>
-                                  ))}
+                                  : i?.first_option === "time_in_current_role"
+                                    ? filterType2Options.map((d) => (
+                                      <MenuItem value={d?.value}>
+                                        {d?.title}
+                                      </MenuItem>
+                                    ))
+                                    : i?.first_option === "line_management"
+                                      ? filterType2Options.map((d) => (
+                                        <MenuItem value={d?.value}>
+                                          {d?.title}
+                                        </MenuItem>
+                                      ))
+                                      : i?.first_option === "notice_period"
+                                        ? filterType2Options.map((d) => (
+                                          <MenuItem value={d?.value}>
+                                            {d?.title}
+                                          </MenuItem>
+                                        ))
+                                        : i?.first_option === "freelance_current"
+                                          ? filterType2Options.map((d) => (
+                                            <MenuItem value={d?.value}>
+                                              {d?.title}
+                                            </MenuItem>
+                                          ))
+                                          : i?.first_option === "freelance_future"
+                                            ? filterType2Options.map((d) => (
+                                              <MenuItem value={d?.value}>
+                                                {d?.title}
+                                              </MenuItem>
+                                            ))
+                                            : i?.first_option === "status"
+                                              ? filterType2Options.map((d) => (
+                                                <MenuItem value={d?.value}>
+                                                  {d?.title}
+                                                </MenuItem>
+                                              ))
+                                              : i?.first_option ===
+                                                "legaltech_vendor_or_consultancy"
+                                                ? filterType2Options.map((d) => (
+                                                  <MenuItem value={d?.value}>
+                                                    {d?.title}
+                                                  </MenuItem>
+                                                ))
+                                                : i?.first_option === "desired_salary"
+                                                  ? filterTypeRangeOptions.map((d) => (
+                                                    <MenuItem value={d?.value}>
+                                                      {d?.title}
+                                                    </MenuItem>
+                                                  ))
+                                                  : i?.first_option ===
+                                                    "desired_bonus_or_commission"
+                                                    ? filterTypeRangeOptions.map((d) => (
+                                                      <MenuItem value={d?.value}>
+                                                        {d?.title}
+                                                      </MenuItem>
+                                                    ))
+                                                    : i?.first_option === "freelance_daily_rate"
+                                                      ? filterTypeRangeOptions.map((d) => (
+                                                        <MenuItem value={d?.value}>
+                                                          {d?.title}
+                                                        </MenuItem>
+                                                      ))
+                                                      : i?.first_option === "pqe"
+                                                        ? filterTypeRangeOptions.map((d) => (
+                                                          <MenuItem value={d?.value}>
+                                                            {d?.title}
+                                                          </MenuItem>
+                                                        ))
+                                                        : i?.first_option === "deal_size"
+                                                          ? filterTypeRangeOptions.map((d) => (
+                                                            <MenuItem value={d?.value}>
+                                                              {d?.title}
+                                                            </MenuItem>
+                                                          ))
+                                                          : i?.first_option === "sales_quota"
+                                                            ? filterTypeRangeOptions.map((d) => (
+                                                              <MenuItem value={d?.value}>
+                                                                {d?.title}
+                                                              </MenuItem>
+                                                            ))
+                                                            : filterType3Options.map((d) => (
+                                                              <MenuItem value={d?.value}>
+                                                                {d?.title}
+                                                              </MenuItem>
+                                                            ))}
                             </Select>
                           </FormControl>
                         </div>
@@ -998,18 +1063,17 @@ const GuestDashboard = () => {
                     </div>
 
                     {i?.first_option === "desired_salary" ||
-                    i?.first_option === "desired_bonus_or_commission" ||
-                    i?.first_option === "freelance_daily_rate" ||
-                    i?.first_option === "deal_size" ||
-                    i?.first_option === "sales_quota" ? (
+                      i?.first_option === "desired_bonus_or_commission" ||
+                      i?.first_option === "freelance_daily_rate" ||
+                      i?.first_option === "deal_size" ||
+                      i?.first_option === "sales_quota" ? (
                       <div
-                        className={`${
-                          i?.filter_type === "is_between" ||
+                        className={`${i?.filter_type === "is_between" ||
                           i?.filter_type === "is_more_than" ||
                           i?.filter_type === "is_less_than"
-                            ? "currency-input"
-                            : "currency-input-multi"
-                        }`}
+                          ? "currency-input"
+                          : "currency-input-multi"
+                          }`}
                       >
                         <div className="select-down-icon filter-select">
                           <div className="w-100">
@@ -1045,11 +1109,10 @@ const GuestDashboard = () => {
                     ) : null}
 
                     <div
-                      className={`${
-                        i?.filter_type === "is_between"
-                          ? "third-input-multi"
-                          : "third-input"
-                      } third-input-multi-limit`}
+                      className={`${i?.filter_type === "is_between"
+                        ? "third-input-multi"
+                        : "third-input"
+                        } third-input-multi-limit`}
                     >
                       <div className="filter-select select-down-icon">
                         <div className="w-100">
@@ -1169,13 +1232,13 @@ const GuestDashboard = () => {
                                   {...params}
                                   placeholder={
                                     i?.first_option === "desired_salary" ||
-                                    i?.first_option ===
+                                      i?.first_option ===
                                       "desired_bonus_or_commission" ||
-                                    i?.first_option ===
+                                      i?.first_option ===
                                       "freelance_daily_rate" ||
-                                    i?.first_option === "deal_size" ||
-                                    i?.first_option === "sales_quota" ||
-                                    i?.first_option === "pqe"
+                                      i?.first_option === "deal_size" ||
+                                      i?.first_option === "sales_quota" ||
+                                      i?.first_option === "pqe"
                                       ? "Please enter number"
                                       : ""
                                   }
@@ -1192,11 +1255,10 @@ const GuestDashboard = () => {
 
                     {i?.filter_type === "is_between" ? (
                       <div
-                        className={`${
-                          i?.filter_type === "is_between"
-                            ? "third-input-multi"
-                            : "third-input"
-                        }`}
+                        className={`${i?.filter_type === "is_between"
+                          ? "third-input-multi"
+                          : "third-input"
+                          }`}
                       >
                         <div className="filter-select select-down-icon">
                           <div className="w-100">
@@ -1476,7 +1538,7 @@ const GuestDashboard = () => {
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                           className="pointer"
-                          onClick={(e) => handleEdit(d.uuid)}
+                        // onClick={(e) => handleEdit(d.uuid)}
                         >
                           <TableCell component="th" scope="row">
                             #{d?.id}
@@ -1485,6 +1547,12 @@ const GuestDashboard = () => {
                           {selctedColumns.includes("Job Title") ? (
                             <TableCell component="th" scope="row">
                               {d?.job_title}
+                            </TableCell>
+                          ) : null}
+
+                          {selctedColumns.includes("Desired Region") ? (
+                            <TableCell component="th" scope="row">
+                              {d?.desired_region}
                             </TableCell>
                           ) : null}
 
@@ -1526,8 +1594,8 @@ const GuestDashboard = () => {
                               {d.notice_period == 0 || d.notice_period == 1
                                 ? `${d.notice_period} Week`
                                 : d.notice_period == null
-                                ? ""
-                                : `${d.notice_period} Weeks`}
+                                  ? ""
+                                  : `${d.notice_period} Weeks`}
                             </TableCell>
                           ) : null}
 
@@ -1751,7 +1819,7 @@ const GuestDashboard = () => {
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                           className="pointer"
-                          onClick={(e) => handleEdit(d.uuid)}
+                        // onClick={(e) => handleEdit(d.uuid)}
                         >
                           <TableCell component="th" scope="row">
                             #{d?.id}
@@ -1806,7 +1874,7 @@ const GuestDashboard = () => {
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                           className="pointer"
-                          onClick={(e) => handleEdit(d.uuid)}
+                        // onClick={(e) => handleEdit(d.uuid)}
                         >
                           <TableCell component="th" scope="row">
                             #{d?.id}
@@ -1833,8 +1901,8 @@ const GuestDashboard = () => {
                             {d.notice_period == 0 || d.notice_period == 1
                               ? `${d.notice_period} Week`
                               : d.notice_period == null
-                              ? ""
-                              : `${d.notice_period} Weeks`}
+                                ? ""
+                                : `${d.notice_period} Weeks`}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -1870,7 +1938,7 @@ const GuestDashboard = () => {
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                           className="pointer"
-                          onClick={(e) => handleEdit(d.uuid)}
+                        // onClick={(e) => handleEdit(d.uuid)}
                         >
                           <TableCell component="th" scope="row">
                             #{d?.id}
@@ -1908,8 +1976,8 @@ const GuestDashboard = () => {
                             {d.notice_period == 0 || d.notice_period == 1
                               ? `${d.notice_period} Week`
                               : d.notice_period == null
-                              ? ""
-                              : `${d.notice_period} Weeks`}
+                                ? ""
+                                : `${d.notice_period} Weeks`}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -1933,6 +2001,9 @@ const GuestDashboard = () => {
                         <TableCell align="right">
                           D. Bonus / commission
                         </TableCell>
+                        <TableCell align="center">
+                          VIEW
+                        </TableCell>
                       </TableRow>
                     </TableHead>
 
@@ -1944,7 +2015,7 @@ const GuestDashboard = () => {
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                           className="pointer"
-                          onClick={(e) => handleEdit(d.uuid)}
+                        // onClick={(e) => handleEdit(d.uuid)}
                         >
                           <TableCell component="th" scope="row">
                             #{d?.id}
@@ -1977,6 +2048,13 @@ const GuestDashboard = () => {
                                 ?.currency_code
                             }{" "}
                             {d.desired_bonus_or_commission}
+                          </TableCell>
+                          <TableCell align="center">
+                            {
+                              <div onClick={(e) => handleEdit(d.uuid)}>
+                                <img src={eyes} alt="eyes_image" className="edit_btn px-3 py-1" />
+                              </div>
+                            }
                           </TableCell>
                         </TableRow>
                       ))}
